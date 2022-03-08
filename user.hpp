@@ -1,5 +1,5 @@
-#ifndef TCPCLIENT_HPP
-#define TCPCLIENT_HPP
+#ifndef USER_HPP
+#define USER_HPP
 
 
 #include <iostream>
@@ -35,7 +35,7 @@ using namespace std;
 
 #define PORT 60069
 
-class TCPClient{
+class User{
 
 private:
 	string userName;
@@ -44,9 +44,8 @@ private:
 	vector <string> messages;
 
 public:
-	void connection();
-	void sendData();
-	void recieveData();
+	void setUserName(string userName);
+	string getUserName();
 	
 
 };
