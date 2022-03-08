@@ -38,14 +38,16 @@ using namespace std;
 class TCPClient{
 
 private:
-	string userName;
-	vector <string> locations;
-	int socketNum;
-	vector <string> messages;
+	int clientSocket = 0;
+	int valRead;
+	struct sockaddr_in servAddr;
+	struct hostent *hostEntry;
+	char buffer[1024];
 
 public:
+	TCPClient();
 	void connection();
-	void sendData();
+	void sendData(char *messageToServer);
 	void recieveData();
 	
 
