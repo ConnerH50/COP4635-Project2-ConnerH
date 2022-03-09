@@ -47,7 +47,8 @@ void TCPClient::connection(){
 }
 
 void TCPClient::sendData(char *messageToServer){
-	send(clientSocket, messageToServer, strlen(messageToServer), 0);
+	send(clientSocket, messageToServer, strlen(messageToServer) + 1, 0); // + 1 for terminating byte
+	//send(clientSocket, messageToServer, strlen(messageToServer) 0); // + 1 for terminating byte
 }
 
 void TCPClient::recieveData(){
@@ -59,10 +60,17 @@ void TCPClient::recieveData(){
 
 int main(int argc, char **argv){
 
+	char buffer[1024];
+	string strBuffer;
+
 	TCPClient client;
 	client.connection();
-	client.sendData("Hello from Client");
-	//cout << "hello message sentt" << endl;
+
+	cout << "Please enter your message: " << endl;
+	fgets(buffer, 1024, stdin); //fgets reads newline char and null terminating char
+	buffer[strcspn(buffer, "\n")] = 0; // use strcspn (string c span) to remove it 'cause it isn't needed
+
+	client.sendData(buffer);
 	client.recieveData();
 
 	return 0;

@@ -52,6 +52,10 @@ int recieveData(int newSocket, char *buffer, int bufferSize){
 
 }
 
+void runServer(int socket, char *buffer){
+
+}
+
 //server gets user data for client and sends it to client
 
 int main(int argc, char **argv){
@@ -91,7 +95,7 @@ int main(int argc, char **argv){
 		perror("Error in bind");
 		return -1;
 	}
-	cout << "ServerFD bind successful" << endl;
+	cout << "Server bind successful" << endl;
 
 	//listen on socket
 	if(listen(serverFD, 10) < 0){
@@ -101,7 +105,7 @@ int main(int argc, char **argv){
 
 	cout << "Port is: " << PORT << endl;
 	cout << "Host Name is: " << hostBuffer << endl;
-	cout << "Host IP is: " << IPBuffer << endl;
+	cout << "Host IP is: " << IPBuffer << endl << endl;
 
 	if((newSocket = accept(serverFD, (struct sockaddr *)&sockAddress, (socklen_t*)&addressLength)) < 0){
 			cout << "Error in accept testing" << endl;
@@ -109,10 +113,10 @@ int main(int argc, char **argv){
 	}
 
 	cout << "accept completed" << endl << endl;
+	runServer(newSocket, buffer);
 
 	valRead = recieveData(newSocket, buffer, 1024);
 	cout << "From Client: " << buffer << endl;
-	//send(newSocket, messageToClient, strlen(messageToClient), 0);
 	sendData(newSocket, messageToClient, 0);
 	cout << "Hello message sent" << endl;
 
