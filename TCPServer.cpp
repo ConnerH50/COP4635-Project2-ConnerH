@@ -38,6 +38,20 @@ char httpHeader[25] = "HTTP/1.1 200 Ok\r\n"; //needed for sending stuff
  * Methods
  */
 
+
+void sendData(int newSocket, char *message, int bufferSize){
+
+	send(newSocket, message, strlen(message), bufferSize);
+
+}
+
+int recieveData(int newSocket, char *buffer, int bufferSize){
+
+	//read(newSocket, buffer, 1024);
+	return read(newSocket, buffer, bufferSize);
+
+}
+
 //server gets user data for client and sends it to client
 
 int main(int argc, char **argv){
@@ -94,11 +108,12 @@ int main(int argc, char **argv){
 			exit(EXIT_FAILURE);
 	}
 
-	cout << "accept completed" << endl;
+	cout << "accept completed" << endl << endl;
 
-	valRead = read(newSocket, buffer, 1024);
-	cout << buffer << endl;
-	send(newSocket, messageToClient, strlen(messageToClient), 0);
+	valRead = recieveData(newSocket, buffer, 1024);
+	cout << "From Client: " << buffer << endl;
+	//send(newSocket, messageToClient, strlen(messageToClient), 0);
+	sendData(newSocket, messageToClient, 0);
 	cout << "Hello message sent" << endl;
 
 	/*while(1){ // Infinite loop for the server

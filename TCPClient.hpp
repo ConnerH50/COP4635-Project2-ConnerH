@@ -38,7 +38,7 @@ using namespace std;
 class TCPClient{
 
 private:
-	int clientSocket = 0;
+	int clientSocket;
 	int valRead;
 	struct sockaddr_in servAddr;
 	struct hostent *hostEntry;

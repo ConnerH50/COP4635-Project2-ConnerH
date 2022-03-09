@@ -6,6 +6,8 @@
 #include "TCPClient.hpp"
 
 TCPClient::TCPClient(){
+	clientSocket = 0;
+	valRead = 0;
 
 
 }
@@ -37,7 +39,7 @@ void TCPClient::connection(){
 	// sendData(messageToServer);
 	// cout << "hello message sentt" << endl;
 	// recieveData();
-	
+
 	// valRead = read(clientSocket, buffer, 1024);
 	// //string buffString = string(buffer);
 	// cout << buffer << endl;
@@ -60,7 +62,7 @@ int main(int argc, char **argv){
 	TCPClient client;
 	client.connection();
 	client.sendData("Hello from Client");
-	cout << "hello message sentt" << endl;
+	//cout << "hello message sentt" << endl;
 	client.recieveData();
 
 	return 0;
