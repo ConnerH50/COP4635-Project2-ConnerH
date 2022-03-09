@@ -43,6 +43,7 @@ private:
 	struct sockaddr_in servAddr;
 	struct hostent *hostEntry;
 	char buffer[1024];
+	char inputBuffer[1024];
 
 public:
 	TCPClient();
@@ -51,6 +52,7 @@ public:
 	void recieveData();
 	char *getBuffer();
 	int getClientSocket();
+	void runClient();
 	
 
 };

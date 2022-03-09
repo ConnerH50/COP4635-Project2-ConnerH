@@ -8,8 +8,6 @@
 TCPClient::TCPClient(){
 	clientSocket = 0;
 	valRead = 0;
-
-
 }
 
 void TCPClient::connection(){
@@ -72,21 +70,46 @@ int TCPClient::getClientSocket(){
 	return clientSocket;
 }
 
+void TCPClient::runClient(){
+	connection();
+
+	recieveData();
+	
+	fgets(inputBuffer, 1024, stdin); //fgets reads newline char and null terminating char
+	inputBuffer[strcspn(inputBuffer, "\n")] = 0; // use strcspn (string c span) to remove it 'cause it isn't needed
+
+	//check to see if user wants to exit
+	if((strcmp(inputBuffer, "exit") == 0)){
+		//cout << "inputBuffer and exit are equal" << endl;
+		sendData(inputBuffer);
+	}
+
+	//main client loop
+	while(!(strcmp(inputBuffer, "exit") == 0)){
+		sendData(inputBuffer);
+		recieveData();
+
+		fgets(inputBuffer, 1024, stdin); //fgets reads newline char and null terminating char
+		inputBuffer[strcspn(inputBuffer, "\n")] = 0; // use strcspn (string c span) to remove it 'cause it isn't needed
+	}
+}
+
 int main(int argc, char **argv){
 
 	char input[1024];
 	//string strBuffer;
 
 	TCPClient client;
-	client.connection();
+	client.runClient();
+	// client.connection();
 
-	client.recieveData();
+	// client.recieveData();
 
-	fgets(input, 1024, stdin); //fgets reads newline char and null terminating char
-	input[strcspn(input, "\n")] = 0; // use strcspn (string c span) to remove it 'cause it isn't needed
-	client.sendData(input);
+	// fgets(input, 1024, stdin); //fgets reads newline char and null terminating char
+	// input[strcspn(input, "\n")] = 0; // use strcspn (string c span) to remove it 'cause it isn't needed
+	// client.sendData(input);
 
-	client.recieveData();
+	// client.recieveData();
 	close(client.getClientSocket());
 
 	return 0;

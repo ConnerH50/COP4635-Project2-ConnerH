@@ -34,6 +34,9 @@ using namespace std;
 #define PORT 60069
 char httpHeader[25] = "HTTP/1.1 200 Ok\r\n"; //needed for sending stuff
 
+char userName[1024] = {0};
+char passWord[1024] = {0};
+
 /*
  * Methods
  */
@@ -45,36 +48,80 @@ void sendData(int newSocket, char *message, int bufferSize){
 
 }
 
-int recieveData(int newSocket, char *buffer, int bufferSize){
+void recieveData(int newSocket, char *buffer, int bufferSize){
 	cout << "in recieveData" << endl;
 
-	//return read(newSocket, buffer, bufferSize);
-	return recv(newSocket, buffer, bufferSize, 0);
+	//read(newSocket, buffer, bufferSize);
+	//return recv(newSocket, buffer, bufferSize, 0);
+	recv(newSocket, buffer, bufferSize, 0);
+	int i = 0;
 
+	// while((buffer[i++] = getchar()) != '\n'){
+	// 	;
+	// }
+}
+
+char *getUserName(int socket, char *buffer){
+	char userNameMessage[] = "\tUsername:";
+	sendData(socket, userNameMessage, 0);
+	recieveData(socket, userName, sizeof(userName));
+	return userName;
+}
+
+char *getPassword(int socket, char *buffer){
+	char passwordMessage[] = "\tPassword:";
+	sendData(socket, passwordMessage, 0);
+	recieveData(socket, passWord, sizeof(passWord));
+	return passWord;
+}
+
+void login(int socket, char *buffer){
+
+	// char userName[1024] = {0};
+	// char passWord[1024] = {0};
+
+	cout << "		Login" << endl;
+
+	getUserName(socket, buffer);
+	getPassword(socket, buffer);
+
+	cout << "Username: " << userName << endl;
+	cout << " Password: " << passWord << endl;
 }
 
 void runServer(int socket, char *buffer){
-	sendData(socket, "Welcome!\n\tPress 1 to Login\n\tPress 2 to Register\n\tType 'exit' to Quit\n", 0);
+	char welcomeMessage[] = "Welcome!\n\tPress 1 to Login\n\tPress 2 to Register\n\tType 'exit' to Quit\n";
+	sendData(socket, welcomeMessage, 0);
 
 	cout << "in runServer" << endl;
-	recieveData(socket, buffer, strlen(buffer));
-	while(!(strcmp(buffer, "exit") == 0)){
 
+	//main server loop
+	recieveData(socket, buffer, strlen(buffer));
+	while(1){
+		cout << "in runServer while loop" << endl;
+
+		if((strcmp(buffer, "exit") == 0)){
+			break;
+		}else if(strcmp(buffer, "1") == 0){
+			login(socket, buffer);
+		}
 		
 
-
+		//memset(buffer, 0, 1024); // use memset to clear buffer for new data
 		recieveData(socket, buffer, strlen(buffer));
+		// bzero(buffer, sizeof(buffer));
+		// recieveData(socket, buffer, sizeof(buffer));
 	}
 }
 
 //server gets user data for client and sends it to client
 
 int main(int argc, char **argv){
-	int newSocket, serverFD, pid, valRead;
+	int newSocket, serverFD;
 	int option = 1;
 	char hostBuffer[1024];
 	char buffer[1024];
-	char *IPBuffer, *requestType, *filePath, *fileExtension;
+	char *IPBuffer;
 	struct hostent *hostEntry;
 	struct sockaddr_in sockAddress;
 	int addressLength = sizeof(sockAddress);
@@ -128,7 +175,7 @@ int main(int argc, char **argv){
 
 	//valRead = recieveData(newSocket, buffer, 1024);
 	//cout << "From Client: " << buffer << endl;
-	sendData(newSocket, messageToClient, 0);
+	//sendData(newSocket, messageToClient, 0);
 
 
 	//sendData(newSocket, "hi part 2\n", 0);
@@ -154,6 +201,8 @@ int main(int argc, char **argv){
 		}
 
 	}*/
+
+	cout << "Username: " << userName << " Password: " << passWord << endl;
 
 	close(serverFD);
 
