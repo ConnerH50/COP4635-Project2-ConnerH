@@ -49,6 +49,8 @@ public:
 	void connection();
 	void sendData(char *messageToServer);
 	void recieveData();
+	char *getBuffer();
+	int getClientSocket();
 	
 
 };

@@ -47,31 +47,47 @@ void TCPClient::connection(){
 }
 
 void TCPClient::sendData(char *messageToServer){
+	cout << "in sendData" << endl;
+
 	send(clientSocket, messageToServer, strlen(messageToServer) + 1, 0); // + 1 for terminating byte
 	//send(clientSocket, messageToServer, strlen(messageToServer) 0); // + 1 for terminating byte
 }
 
 void TCPClient::recieveData(){
-	valRead = read(clientSocket, buffer, 1024);
+	cout << "in recieveData" << endl;
+
+	//valRead = read(clientSocket, buffer, 1024);
+	valRead = recv(clientSocket, buffer, 1024, 0);
 	//string buffString = string(buffer);
 	cout << buffer << endl;
+	memset(buffer, 0, 1024); // use memset to clear buffer for new data
 	
+}
+
+char *TCPClient::getBuffer(){
+	return buffer;
+}
+
+int TCPClient::getClientSocket(){
+	return clientSocket;
 }
 
 int main(int argc, char **argv){
 
-	char buffer[1024];
-	string strBuffer;
+	char input[1024];
+	//string strBuffer;
 
 	TCPClient client;
 	client.connection();
 
-	cout << "Please enter your message: " << endl;
-	fgets(buffer, 1024, stdin); //fgets reads newline char and null terminating char
-	buffer[strcspn(buffer, "\n")] = 0; // use strcspn (string c span) to remove it 'cause it isn't needed
-
-	client.sendData(buffer);
 	client.recieveData();
+
+	fgets(input, 1024, stdin); //fgets reads newline char and null terminating char
+	input[strcspn(input, "\n")] = 0; // use strcspn (string c span) to remove it 'cause it isn't needed
+	client.sendData(input);
+
+	client.recieveData();
+	close(client.getClientSocket());
 
 	return 0;
 }

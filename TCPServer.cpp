@@ -46,14 +46,25 @@ void sendData(int newSocket, char *message, int bufferSize){
 }
 
 int recieveData(int newSocket, char *buffer, int bufferSize){
+	cout << "in recieveData" << endl;
 
-	//read(newSocket, buffer, 1024);
-	return read(newSocket, buffer, bufferSize);
+	//return read(newSocket, buffer, bufferSize);
+	return recv(newSocket, buffer, bufferSize, 0);
 
 }
 
 void runServer(int socket, char *buffer){
+	sendData(socket, "Welcome!\n\tPress 1 to Login\n\tPress 2 to Register\n\tType 'exit' to Quit\n", 0);
 
+	cout << "in runServer" << endl;
+	recieveData(socket, buffer, strlen(buffer));
+	while(!(strcmp(buffer, "exit") == 0)){
+
+		
+
+
+		recieveData(socket, buffer, strlen(buffer));
+	}
 }
 
 //server gets user data for client and sends it to client
@@ -68,7 +79,7 @@ int main(int argc, char **argv){
 	struct sockaddr_in sockAddress;
 	int addressLength = sizeof(sockAddress);
 
-	char *messageToClient = "Hello from server";
+	char *messageToClient = "Hello from server\n";
 	
 	//get host things
 	gethostname(hostBuffer, sizeof(hostBuffer)); //get host name
@@ -115,10 +126,12 @@ int main(int argc, char **argv){
 	cout << "accept completed" << endl << endl;
 	runServer(newSocket, buffer);
 
-	valRead = recieveData(newSocket, buffer, 1024);
-	cout << "From Client: " << buffer << endl;
+	//valRead = recieveData(newSocket, buffer, 1024);
+	//cout << "From Client: " << buffer << endl;
 	sendData(newSocket, messageToClient, 0);
-	cout << "Hello message sent" << endl;
+
+
+	//sendData(newSocket, "hi part 2\n", 0);
 
 	/*while(1){ // Infinite loop for the server
 	
