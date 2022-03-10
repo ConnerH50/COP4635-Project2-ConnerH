@@ -3,6 +3,7 @@
 #include <mutex>
 #include <vector>
 #include <condition_variable> //May not need
+#include <fstream>
 
 /*
  * C includes
@@ -61,40 +62,42 @@ void recieveData(int newSocket, char *buffer, int bufferSize){
 	// }
 }
 
-char *getUserName(int socket, char *buffer){
+void getUserName(int socket, char *buffer){
+	cout << "in getUserName" << endl;
 	char userNameMessage[] = "\tUsername:";
 	sendData(socket, userNameMessage, strlen(userNameMessage));
 	recieveData(socket, userName, sizeof(userName));
-	return userName;
+	//return userName;
 }
 
-char *getPassword(int socket, char *buffer){
+void getPassword(int socket, char *buffer){
 	char passwordMessage[] = "\tPassword:";
 	sendData(socket, passwordMessage, 0);
 	recieveData(socket, passWord, sizeof(passWord));
-	return passWord;
+	//return passWord;
 }
 
-void login(int socket, char *buffer){
+bool login(int socket, char *buffer){
 
-	// char userName[1024] = {0};
-	// char passWord[1024] = {0};
-
-	cout << "		Login" << endl;
+	ofstream loginFile;
 
 	getUserName(socket, buffer);
 	getPassword(socket, buffer);
 
 	cout << "Username: " << userName << endl;
 	cout << "Password: " << passWord << endl;
+
+	return false;
 }
 
-void registerForService(int socket, char *buffer){
+bool registerForService(int socket, char *buffer){
 	getUserName(socket, buffer);
 	getPassword(socket, buffer);
 
 	cout << "Username: " << userName << endl;
 	cout << "Password: " << passWord << endl;
+
+	return false;
 }
 
 void runServer(int socket, char *buffer){
@@ -120,9 +123,9 @@ void runServer(int socket, char *buffer){
 		sendData(socket, welcomeMessage, 0);
 		//sendData(socket, "", 0);
 		//memset(buffer, 0, 1024); // use memset to clear buffer for new data
-		recieveData(socket, buffer, strlen(buffer));
-		// bzero(buffer, sizeof(buffer));
-		// recieveData(socket, buffer, sizeof(buffer));
+		//ecieveData(socket, buffer, strlen(buffer));
+		bzero(buffer, sizeof(buffer));
+		recieveData(socket, buffer, sizeof(buffer));
 	}
 }
 
@@ -182,10 +185,16 @@ int main(int argc, char **argv){
 			exit(EXIT_FAILURE);
 	}
 
-	if((pid = fork()) < 0){
-		cout << "Error in fork" << endl;
-		exit(EXIT_FAILURE);
-	}
+	cout << "accept completed" << endl << endl;
+
+	//put threads here
+
+	runServer(newSocket, buffer);
+
+	// if((pid = fork()) < 0){
+	// 	cout << "Error in fork" << endl;
+	// 	exit(EXIT_FAILURE);
+	// }
 
 	// if(pid == 0){ 
 	// 	cout << "accept completed" << endl << endl;
@@ -195,9 +204,6 @@ int main(int argc, char **argv){
 	// }else{
 
 	// }
-
-	cout << "accept completed" << endl << endl;
-	runServer(newSocket, buffer);
 
 	//cout << "Username: " << userName << " Password: " << passWord << endl;
 

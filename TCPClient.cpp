@@ -45,14 +45,14 @@ void TCPClient::connection(){
 }
 
 void TCPClient::sendData(char *messageToServer){
-	cout << "in sendData" << endl;
+	cout << "		in sendData" << endl;
 
 	send(clientSocket, messageToServer, strlen(messageToServer) + 1, 0); // + 1 for terminating byte
 	//send(clientSocket, messageToServer, strlen(messageToServer) 0); // + 1 for terminating byte
 }
 
 void TCPClient::recieveData(){
-	cout << "in recieveData" << endl;
+	cout << "		in recieveData" << endl;
 	valRead = recv(clientSocket, buffer, 1024, 0);
 	cout << valRead << endl;
 	//string buffString = string(buffer);
@@ -90,6 +90,7 @@ void TCPClient::runClient(){
 
 		fgets(inputBuffer, 1024, stdin); //fgets reads newline char and null terminating char
 		inputBuffer[strcspn(inputBuffer, "\n")] = 0; // use strcspn (string c span) to remove it 'cause it isn't needed
+		cout << "inputBuffer: " << inputBuffer << endl;
 	}
 }
 
