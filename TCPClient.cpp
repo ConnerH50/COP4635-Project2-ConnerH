@@ -53,8 +53,6 @@ void TCPClient::sendData(char *messageToServer){
 
 void TCPClient::recieveData(){
 	cout << "in recieveData" << endl;
-
-	//valRead = read(clientSocket, buffer, 1024);
 	valRead = recv(clientSocket, buffer, 1024, 0);
 	cout << valRead << endl;
 	//string buffString = string(buffer);

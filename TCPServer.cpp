@@ -89,6 +89,14 @@ void login(int socket, char *buffer){
 	cout << "Password: " << passWord << endl;
 }
 
+void registerForService(int socket, char *buffer){
+	getUserName(socket, buffer);
+	getPassword(socket, buffer);
+
+	cout << "Username: " << userName << endl;
+	cout << "Password: " << passWord << endl;
+}
+
 void runServer(int socket, char *buffer){
 	char welcomeMessage[] = "Welcome!\n\tPress 1 to Login\n\tPress 2 to Register\n\tType 'exit' to Quit\n";
 	sendData(socket, welcomeMessage, 0);
@@ -105,6 +113,8 @@ void runServer(int socket, char *buffer){
 			break;
 		}else if(strcmp(buffer, "1") == 0){
 			login(socket, buffer);
+		}else if(strcmp(buffer, "2") == 0){
+			registerForService(socket, buffer);
 		}
 		
 		sendData(socket, welcomeMessage, 0);
@@ -119,7 +129,7 @@ void runServer(int socket, char *buffer){
 //server gets user data for client and sends it to client
 
 int main(int argc, char **argv){
-	int newSocket, serverFD;
+	int newSocket, serverFD, pid;
 	int option = 1;
 	char hostBuffer[1024];
 	char buffer[1024];
@@ -172,39 +182,24 @@ int main(int argc, char **argv){
 			exit(EXIT_FAILURE);
 	}
 
+	if((pid = fork()) < 0){
+		cout << "Error in fork" << endl;
+		exit(EXIT_FAILURE);
+	}
+
+	// if(pid == 0){ 
+	// 	cout << "accept completed" << endl << endl;
+	// 	while(1){
+	// 		runServer(newSocket, buffer);
+	// 	}
+	// }else{
+
+	// }
+
 	cout << "accept completed" << endl << endl;
 	runServer(newSocket, buffer);
 
-	//valRead = recieveData(newSocket, buffer, 1024);
-	//cout << "From Client: " << buffer << endl;
-	//sendData(newSocket, messageToClient, 0);
-
-
-	//sendData(newSocket, "hi part 2\n", 0);
-
-	/*while(1){ // Infinite loop for the server
-	
-		cout << endl << "---------------------------------------------" << endl << endl;
-	
-		
-		//Accept testing
-		if((newSocket = accept(serverFD, (struct sockaddr *)&sockAddress, (socklen_t*)&addressLength)) < 0){
-			cout << "Error in accept testing" << endl;
-			exit(EXIT_FAILURE);
-		}
-		
-		//fork process
-		if((pid = fork()) < 0){
-			cout << "Error in fork" << endl;
-			exit(EXIT_FAILURE);
-		}
-		
-		if(pid == 0){ 
-		}
-
-	}*/
-
-	cout << "Username: " << userName << " Password: " << passWord << endl;
+	//cout << "Username: " << userName << " Password: " << passWord << endl;
 
 	close(serverFD);
 
