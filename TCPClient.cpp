@@ -59,7 +59,7 @@ void TCPClient::recieveData(){
 	cout << valRead << endl;
 	//string buffString = string(buffer);
 	cout << buffer << endl;
-	//memset(buffer, 0, 1024); // use memset to clear buffer for new data
+	memset(buffer, 0, 1024); // use memset to clear buffer for new data
 	
 }
 
