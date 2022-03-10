@@ -44,6 +44,7 @@ private:
 	vector <string> messages;
 
 public:
+User();
 	void setUserName(string userName);
 	string getUserName();
 	

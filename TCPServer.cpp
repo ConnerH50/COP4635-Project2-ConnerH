@@ -63,7 +63,7 @@ void recieveData(int newSocket, char *buffer, int bufferSize){
 
 char *getUserName(int socket, char *buffer){
 	char userNameMessage[] = "\tUsername:";
-	sendData(socket, userNameMessage, 0);
+	sendData(socket, userNameMessage, strlen(userNameMessage));
 	recieveData(socket, userName, sizeof(userName));
 	return userName;
 }
@@ -86,7 +86,7 @@ void login(int socket, char *buffer){
 	getPassword(socket, buffer);
 
 	cout << "Username: " << userName << endl;
-	cout << " Password: " << passWord << endl;
+	cout << "Password: " << passWord << endl;
 }
 
 void runServer(int socket, char *buffer){
@@ -99,6 +99,7 @@ void runServer(int socket, char *buffer){
 	recieveData(socket, buffer, strlen(buffer));
 	while(1){
 		cout << "in runServer while loop" << endl;
+		cout << "Buffer: " << buffer << endl;
 
 		if((strcmp(buffer, "exit") == 0)){
 			break;
@@ -106,7 +107,8 @@ void runServer(int socket, char *buffer){
 			login(socket, buffer);
 		}
 		
-
+		sendData(socket, welcomeMessage, 0);
+		//sendData(socket, "", 0);
 		//memset(buffer, 0, 1024); // use memset to clear buffer for new data
 		recieveData(socket, buffer, strlen(buffer));
 		// bzero(buffer, sizeof(buffer));

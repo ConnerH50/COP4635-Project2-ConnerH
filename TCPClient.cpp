@@ -56,9 +56,10 @@ void TCPClient::recieveData(){
 
 	//valRead = read(clientSocket, buffer, 1024);
 	valRead = recv(clientSocket, buffer, 1024, 0);
+	cout << valRead << endl;
 	//string buffString = string(buffer);
 	cout << buffer << endl;
-	memset(buffer, 0, 1024); // use memset to clear buffer for new data
+	//memset(buffer, 0, 1024); // use memset to clear buffer for new data
 	
 }
 
