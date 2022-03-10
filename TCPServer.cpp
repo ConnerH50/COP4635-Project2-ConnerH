@@ -104,29 +104,52 @@ void runServer(int socket, char *buffer){
 	char welcomeMessage[] = "Welcome!\n\tPress 1 to Login\n\tPress 2 to Register\n\tType 'exit' to Quit\n";
 	sendData(socket, welcomeMessage, 0);
 
-	cout << "in runServer" << endl;
+	//cout << "in runServer" << endl;
 
 	//main server loop
 	recieveData(socket, buffer, strlen(buffer));
 	while(1){
 		cout << "in runServer while loop" << endl;
-		cout << "Buffer: " << buffer << endl;
+		//cout << "Buffer: " << buffer << endl;
 
-		if((strcmp(buffer, "exit") == 0)){
-			break;
-		}else if(strcmp(buffer, "1") == 0){
+		// if((strcmp(buffer, "exit") == 0)){
+		// 	break;
+		// }else 
+
+		if(strcmp(buffer, "1") == 0){
 			login(socket, buffer);
+
+			//send rest of data
+
+			sendData(socket, welcomeMessage, 0); // change this to long user message
+			bzero(buffer, sizeof(buffer));
+			recieveData(socket, buffer, sizeof(buffer));
 		}else if(strcmp(buffer, "2") == 0){
-			registerForService(socket, buffer);
+			if(registerForService(socket, buffer) == true){
+				char thankForRegistering[] = "Thank you for registering!\n\n";
+				sendData(socket, thankForRegistering, 0);
+				sendData(socket, welcomeMessage, 0);
+				bzero(buffer, sizeof(buffer));
+				recieveData(socket, buffer, sizeof(buffer));
+			}else{
+				char registerFailed[] = "I'm sorry, registering failed! Please try again!\n\n";
+				sendData(socket, registerFailed, 0);
+				sendData(socket, welcomeMessage, 0);
+				bzero(buffer, sizeof(buffer));
+				recieveData(socket, buffer, sizeof(buffer));
+			}			
+		}else{
+			sendData(socket, welcomeMessage, 0);
+			bzero(buffer, sizeof(buffer));
+			recieveData(socket, buffer, sizeof(buffer));
 		}
 		
-		sendData(socket, welcomeMessage, 0);
-		//sendData(socket, "", 0);
-		//memset(buffer, 0, 1024); // use memset to clear buffer for new data
-		//ecieveData(socket, buffer, strlen(buffer));
-		bzero(buffer, sizeof(buffer));
-		recieveData(socket, buffer, sizeof(buffer));
 	}
+}
+
+void threadHandler(int socket, char *buffer){
+	//thread newThread(runServer, newSocket, buffer);
+	runServer(socket, buffer);
 }
 
 //server gets user data for client and sends it to client
@@ -180,16 +203,27 @@ int main(int argc, char **argv){
 	cout << "Host Name is: " << hostBuffer << endl;
 	cout << "Host IP is: " << IPBuffer << endl << endl;
 
-	if((newSocket = accept(serverFD, (struct sockaddr *)&sockAddress, (socklen_t*)&addressLength)) < 0){
-			cout << "Error in accept testing" << endl;
-			exit(EXIT_FAILURE);
+	while(1){
+		if((newSocket = accept(serverFD, (struct sockaddr *)&sockAddress, (socklen_t*)&addressLength)) < 0){
+				cout << "Error in accept testing" << endl;
+				exit(EXIT_FAILURE);
+		}
+
+		cout << "accept completed" << endl << endl;
+
+		//put threads here
+		vector<thread> allClients;
+
+		//char welcomeMessage[] = "Welcome!\n\tPress 1 to Login\n\tPress 2 to Register\n\tType 'exit' to Quit\n";
+		//sendData(newSocket, welcomeMessage, 0);
+		//runServer(newSocket, buffer);
+
+		thread newThread(runServer, newSocket, buffer);
+		// thread newThread(threadHandler, newSocket, buffer);
+		newThread.detach();
 	}
 
-	cout << "accept completed" << endl << endl;
-
-	//put threads here
-
-	runServer(newSocket, buffer);
+	//newThread.join();
 
 	// if((pid = fork()) < 0){
 	// 	cout << "Error in fork" << endl;
@@ -207,6 +241,7 @@ int main(int argc, char **argv){
 
 	//cout << "Username: " << userName << " Password: " << passWord << endl;
 
+	cout << "Server Exiting" << endl;
 	close(serverFD);
 
 	return 0;

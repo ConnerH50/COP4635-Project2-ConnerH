@@ -84,13 +84,18 @@ void TCPClient::runClient(){
 	}
 
 	//main client loop
-	while(!(strcmp(inputBuffer, "exit") == 0)){
+	while(1/*!(strcmp(inputBuffer, "exit") == 0)*/){
 		sendData(inputBuffer);
 		recieveData();
 
 		fgets(inputBuffer, 1024, stdin); //fgets reads newline char and null terminating char
 		inputBuffer[strcspn(inputBuffer, "\n")] = 0; // use strcspn (string c span) to remove it 'cause it isn't needed
 		cout << "inputBuffer: " << inputBuffer << endl;
+
+		if((strcmp(inputBuffer, "exit") == 0)){
+			//cout << "inputBuffer and exit are equal" << endl;
+			break;
+		}	
 	}
 }
 
