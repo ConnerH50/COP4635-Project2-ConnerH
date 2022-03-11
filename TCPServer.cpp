@@ -36,7 +36,7 @@ using namespace std;
 //ofstream loginFile;
 fstream loginFile;
 string fileName = "loginInfo.txt";
-User user();
+User user;
 
 
 char userName[1024] = {0};
@@ -74,7 +74,9 @@ void getPassword(int socket){
 	//return passWord;
 }
 
-bool login(int socket, char *buffer){
+bool login(int socket, char *buffer, User user){
+
+	cout << "		SocketNum: " << socket << endl;
 
 	//ifstream loginFile;
 
@@ -95,14 +97,40 @@ bool login(int socket, char *buffer){
 		//char *fileLine[1024];
 		string fileLine;
 
+		//get line from file
 		while(getline(loginFile, fileLine)){
 			cout << "In getline" << endl << endl;
 			cout << fileLine << endl << endl;
+
+			//tokenize string by ',' or ","
+			stringstream sstream(fileLine);
+			string token;
+			string tokens[2];
+			int i = 0;
+
+			// tokenize string and store in array
+			while(getline(sstream, token, ',')){
+				tokens[i] = token;
+				i++;
+			}
+
+			//Try and match username and password
+			cout << "	Username: " << userName << endl;
+			cout << "	Password:" << passWord << endl;
+
+			for(int i = 0; i < 2; i++){
+				cout << "	Token: " << tokens[i] << endl;
+			}
+
+			if((strcmp(tokens[0].c_str(), userName) == 0) && (strcmp(tokens[1].c_str(), passWord) == 0)){
+				cout << "		Username and password match!" << endl;
+				loginFile.close();
+				return true;
+			}
 		}
 
 		loginFile.close();
-		//loggedIn = true;
-		return true;
+		return false;
 	}else{
 		return false;
 	}
@@ -134,6 +162,9 @@ void runServer(int socket, char *buffer){
 	
 	char loginString[] = "Sucessfully Logged In\n\t1: Subscribe to a location\n\t2: Unsubscribe from location\n\t3: Send message to location\n\t4: Send private message\n\t5: See subscribed locations\n\t6: See online users\n\t8: Change password\n\t0: 'exit' to Quit\n";
 	bool loggedIn = false;
+
+	//User user = new User();
+	//User user;
 	
 	sendData(socket, welcomeMessage, 0);
 
@@ -151,7 +182,7 @@ void runServer(int socket, char *buffer){
 			bzero(buffer, sizeof(buffer));
 			recieveData(socket, buffer, sizeof(buffer));
 
-			if(strcmp(buffer, "1") == 0){
+			if(strcmp(buffer, "1") == 0){ // sub to location
 				cout << "In 1" << endl << endl;
 				sendData(socket, loginString, 0);
 				bzero(buffer, sizeof(buffer));
@@ -207,12 +238,13 @@ void runServer(int socket, char *buffer){
 		}else{
 				
 			if(strcmp(buffer, "1") == 0){
-				if(login(socket, buffer) == true){
+				if(login(socket, buffer, user) == true){
 					loggedIn = true;
-					cout << loggedIn << endl;
+					//cout << loggedIn << endl;
 				}else{
 					char loginFailed[] = "I'm sorry, login failed! Please try again!\n\n";
 					sendData(socket, loginFailed, 0);
+					sendData(socket, welcomeMessage, 0);
 					bzero(buffer, sizeof(buffer));
 					recieveData(socket, buffer, sizeof(buffer));
 				}

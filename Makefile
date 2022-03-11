@@ -3,7 +3,7 @@ CXXFLAGS = -std=c++11 -g -Wall -pthread #makefile for threads
 
 all: TCPServer TCPClient
 
-OBJECTS1 = TCPServer.o
+OBJECTS1 = TCPServer.o user.o
 
 TCPServer:  $(OBJECTS1)
 	$(CXX) $(CXXFLAGS) -o $@ $^

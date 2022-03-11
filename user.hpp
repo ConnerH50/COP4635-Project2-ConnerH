@@ -45,8 +45,11 @@ private:
 
 public:
 	User();
+	User(char *userName, int socketNum);
 	void setUserName(char *userName);
 	string getUserName();
+	void setSocketNum(int socketNum);
+	int getSocketNum();
 	void subToLocation(char *location);
 	void unsubToLocation(char *location);
 	void getLocations();
