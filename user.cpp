@@ -5,10 +5,10 @@ User::User(){
 }
 
 User::User(char *userName, int socketNum){
-    
+
 }
 
-void User::setUserName(char *userName){
+void User::setUserName(string userName){
     this->userName = userName;
 }
 

@@ -36,7 +36,7 @@ using namespace std;
 //ofstream loginFile;
 fstream loginFile;
 string fileName = "loginInfo.txt";
-User user;
+//User user; //not needed
 
 
 char userName[1024] = {0};
@@ -54,13 +54,13 @@ void sendData(int newSocket, char *message, int bufferSize){
 }
 
 void recieveData(int newSocket, char *buffer, int bufferSize){
-	cout << "in recieveData" << endl;
+	// cout << "in recieveData" << endl;
 
 	recv(newSocket, buffer, bufferSize, 0);
 }
 
 void getUserName(int socket){
-	cout << "in getUserName" << endl;
+	// cout << "in getUserName" << endl;
 	char userNameMessage[] = "\tUsername:";
 	sendData(socket, userNameMessage, strlen(userNameMessage));
 	recieveData(socket, userName, sizeof(userName));
@@ -74,9 +74,9 @@ void getPassword(int socket){
 	//return passWord;
 }
 
-bool login(int socket, char *buffer, User user){
+bool login(int socket, char *buffer/*, User user*/){
 
-	cout << "		SocketNum: " << socket << endl;
+	// cout << "		SocketNum: " << socket << endl;
 
 	//ifstream loginFile;
 
@@ -85,12 +85,13 @@ bool login(int socket, char *buffer, User user){
 	getUserName(socket);
 	getPassword(socket);
 
-	cout << "Username: " << userName << endl;
-	cout << "Password: " << passWord << endl;
+	// cout << "Username: " << userName << endl;
+	// cout << "Password: " << passWord << endl;
 
 	loginFile.open(fileName);
 	if(loginFile.is_open()){
-		cout << "File is open" << endl;
+		//cout << "File is open" << endl;
+
 		//use getline and parse the line
 		//try and match username and password
 		//if matched, make a new user object and return true
@@ -99,8 +100,8 @@ bool login(int socket, char *buffer, User user){
 
 		//get line from file
 		while(getline(loginFile, fileLine)){
-			cout << "In getline" << endl << endl;
-			cout << fileLine << endl << endl;
+			//cout << "In getline" << endl << endl;
+			//cout << fileLine << endl << endl;
 
 			//tokenize string by ',' or ","
 			stringstream sstream(fileLine);
@@ -115,15 +116,87 @@ bool login(int socket, char *buffer, User user){
 			}
 
 			//Try and match username and password
-			cout << "	Username: " << userName << endl;
-			cout << "	Password:" << passWord << endl;
+			//cout << "	Username: " << userName << endl;
+			//cout << "	Password:" << passWord << endl;
 
-			for(int i = 0; i < 2; i++){
-				cout << "	Token: " << tokens[i] << endl;
-			}
+			// for(int i = 0; i < 2; i++){
+			// 	cout << "	Token: " << tokens[i] << endl;
+			// }
 
 			if((strcmp(tokens[0].c_str(), userName) == 0) && (strcmp(tokens[1].c_str(), passWord) == 0)){
 				cout << "		Username and password match!" << endl;
+				// do user stuff
+				//user.setUserName(userName);
+				//user.setSocketNum(socket);
+				loginFile.close();
+				return true;
+			}
+		}
+
+		loginFile.close();
+		return false;
+	}else{
+		return false;
+	}
+
+	return false;
+}
+
+bool login(int socket, char *buffer, User user){
+
+	// cout << "		SocketNum: " << socket << endl;
+
+	//ifstream loginFile;
+
+	//loginFile.open(fileName);
+
+	getUserName(socket);
+	getPassword(socket);
+
+	// cout << "Username: " << userName << endl;
+	// cout << "Password: " << passWord << endl;
+
+	loginFile.open(fileName);
+	if(loginFile.is_open()){
+		//cout << "File is open" << endl;
+
+		//use getline and parse the line
+		//try and match username and password
+		//if matched, make a new user object and return true
+		//char *fileLine[1024];
+		string fileLine;
+
+		//get line from file
+		while(getline(loginFile, fileLine)){
+			//cout << "In getline" << endl << endl;
+			//cout << fileLine << endl << endl;
+
+			//tokenize string by ',' or ","
+			stringstream sstream(fileLine);
+			string token;
+			string tokens[2];
+			int i = 0;
+
+			// tokenize string and store in array
+			while(getline(sstream, token, ',')){
+				tokens[i] = token;
+				i++;
+			}
+
+			//Try and match username and password
+			//cout << "	Username: " << userName << endl;
+			//cout << "	Password:" << passWord << endl;
+
+			// for(int i = 0; i < 2; i++){
+			// 	cout << "	Token: " << tokens[i] << endl;
+			// }
+
+			if((strcmp(tokens[0].c_str(), userName) == 0) && (strcmp(tokens[1].c_str(), passWord) == 0)){
+				cout << "		Username and password match!" << endl;
+				// do user stuff
+				user.setUserName(userName);
+				user.setSocketNum(socket);
+
 				loginFile.close();
 				return true;
 			}
@@ -143,8 +216,8 @@ bool registerForService(int socket, char *buffer){
 	getUserName(socket);
 	getPassword(socket);
 
-	cout << "Username: " << userName << endl;
-	cout << "Password: " << passWord << endl;
+	// cout << "Username: " << userName << endl;
+	// cout << "Password: " << passWord << endl;
 
 	//loginFile.open(fileName);
 	loginFile.open(fileName, ios::app); //ios::app for appending
@@ -158,13 +231,15 @@ bool registerForService(int socket, char *buffer){
 }
 
 void runServer(int socket, char *buffer){
+	cout << "socket: " << socket << endl;
+	cout << "Client Handler Assigned" << endl;
 	char welcomeMessage[] = "Welcome!\n\tPress 1 to Login\n\tPress 2 to Register\n\tType 'exit' to Quit\n";
 	
 	char loginString[] = "Sucessfully Logged In\n\t1: Subscribe to a location\n\t2: Unsubscribe from location\n\t3: Send message to location\n\t4: Send private message\n\t5: See subscribed locations\n\t6: See online users\n\t8: Change password\n\t0: 'exit' to Quit\n";
 	bool loggedIn = false;
+	User clientUser;
 
 	//User user = new User();
-	//User user;
 	
 	sendData(socket, welcomeMessage, 0);
 
@@ -173,7 +248,7 @@ void runServer(int socket, char *buffer){
 	//main server loop
 	recieveData(socket, buffer, strlen(buffer));
 	while(1){
-		cout << "in runServer while loop" << endl;
+		// cout << "in runServer while loop" << endl;
 
 		if(loggedIn == true){
 
@@ -183,7 +258,7 @@ void runServer(int socket, char *buffer){
 			recieveData(socket, buffer, sizeof(buffer));
 
 			if(strcmp(buffer, "1") == 0){ // sub to location
-				cout << "In 1" << endl << endl;
+				cout << "In 1, " << "Username is: " << clientUser.getUserName() << endl << endl;
 				sendData(socket, loginString, 0);
 				bzero(buffer, sizeof(buffer));
 				recieveData(socket, buffer, sizeof(buffer));
@@ -238,8 +313,15 @@ void runServer(int socket, char *buffer){
 		}else{
 				
 			if(strcmp(buffer, "1") == 0){
-				if(login(socket, buffer, user) == true){
+				if(login(socket, buffer, clientUser) == true){
+					string username = userName;
 					loggedIn = true;
+					cout << userName << endl;
+					//cout << username << endl;
+					clientUser.setUserName(username.c_str());
+					clientUser.setSocketNum(socket);
+					cout << "User's username: " << clientUser.getUserName() << endl;
+					cout << "User's socket number: " << clientUser.getSocketNum() << endl;
 					//cout << loggedIn << endl;
 				}else{
 					char loginFailed[] = "I'm sorry, login failed! Please try again!\n\n";

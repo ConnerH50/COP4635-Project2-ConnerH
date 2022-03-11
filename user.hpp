@@ -38,7 +38,7 @@ using namespace std;
 class User{
 
 private:
-	char *userName;
+	string userName;
 	vector <char *> locations;
 	int socketNum;
 	vector <char *> messages;
@@ -46,7 +46,7 @@ private:
 public:
 	User();
 	User(char *userName, int socketNum);
-	void setUserName(char *userName);
+	void setUserName(string userName);
 	string getUserName();
 	void setSocketNum(int socketNum);
 	int getSocketNum();

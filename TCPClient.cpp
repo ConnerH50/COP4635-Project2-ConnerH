@@ -53,7 +53,7 @@ void TCPClient::sendData(char *messageToServer){
 
 void TCPClient::recieveData(){
 	cout << "		in recieveData" << endl;
-	memset(buffer, 0, 1024); // use memset to clear buffer for new data
+	//memset(buffer, 0, 1024); // use memset to clear buffer for new data
 	valRead = recv(clientSocket, buffer, 1024, 0);
 	cout << valRead << endl;
 	//string buffString = string(buffer);
