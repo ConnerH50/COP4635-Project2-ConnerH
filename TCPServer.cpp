@@ -112,10 +112,6 @@ bool login(int socket, char *buffer){
 
 bool registerForService(int socket, char *buffer){
 
-	//ofstream loginFile;
-
-	
-
 	getUserName(socket);
 	getPassword(socket);
 
@@ -156,9 +152,52 @@ void runServer(int socket, char *buffer){
 			recieveData(socket, buffer, sizeof(buffer));
 
 			if(strcmp(buffer, "1") == 0){
+				cout << "In 1" << endl << endl;
 				sendData(socket, loginString, 0);
 				bzero(buffer, sizeof(buffer));
 				recieveData(socket, buffer, sizeof(buffer));
+			}else if(strcmp(buffer, "2") == 0){
+				cout << "In 2" << endl << endl;
+				sendData(socket, loginString, 0);
+				bzero(buffer, sizeof(buffer));
+				recieveData(socket, buffer, sizeof(buffer));
+
+			}else if(strcmp(buffer, "3") == 0){
+				cout << "In 3" << endl << endl;
+				sendData(socket, loginString, 0);
+				bzero(buffer, sizeof(buffer));
+				recieveData(socket, buffer, sizeof(buffer));
+				
+			}else if(strcmp(buffer, "4") == 0){
+				cout << "In 4" << endl << endl;
+				sendData(socket, loginString, 0);
+				bzero(buffer, sizeof(buffer));
+				recieveData(socket, buffer, sizeof(buffer));
+
+			}else if(strcmp(buffer, "5") == 0){
+				cout << "In 5" << endl << endl;
+				sendData(socket, loginString, 0);
+				bzero(buffer, sizeof(buffer));
+				recieveData(socket, buffer, sizeof(buffer));
+				
+			}else if(strcmp(buffer, "6") == 0){
+				cout << "In 6" << endl << endl;
+				sendData(socket, loginString, 0);
+				bzero(buffer, sizeof(buffer));
+				recieveData(socket, buffer, sizeof(buffer));
+				
+			}else if(strcmp(buffer, "7") == 0){
+				cout << "In 7" << endl << endl;
+				sendData(socket, loginString, 0);
+				bzero(buffer, sizeof(buffer));
+				recieveData(socket, buffer, sizeof(buffer));
+
+			}else if(strcmp(buffer, "8") == 0){
+				cout << "In 8" << endl << endl;
+				sendData(socket, loginString, 0);
+				bzero(buffer, sizeof(buffer));
+				recieveData(socket, buffer, sizeof(buffer));
+				
 			}else{
 				sendData(socket, loginString, 0);
 				bzero(buffer, sizeof(buffer));
@@ -174,7 +213,6 @@ void runServer(int socket, char *buffer){
 				}else{
 					char loginFailed[] = "I'm sorry, login failed! Please try again!\n\n";
 					sendData(socket, loginFailed, 0);
-					sendData(socket, loginString, 0); 
 					bzero(buffer, sizeof(buffer));
 					recieveData(socket, buffer, sizeof(buffer));
 				}
