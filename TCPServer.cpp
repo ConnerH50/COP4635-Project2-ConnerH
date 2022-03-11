@@ -101,6 +101,7 @@ bool login(int socket, char *buffer){
 		}
 
 		loginFile.close();
+		//loggedIn = true;
 		return true;
 	}else{
 		return false;
@@ -121,7 +122,8 @@ bool registerForService(int socket, char *buffer){
 	cout << "Username: " << userName << endl;
 	cout << "Password: " << passWord << endl;
 
-	loginFile.open(fileName);
+	//loginFile.open(fileName);
+	loginFile.open(fileName, ios::app); //ios::app for appending
 	if(loginFile.is_open()){
 		loginFile << userName << "," << passWord << endl;
 		loginFile.close();
@@ -135,6 +137,8 @@ void runServer(int socket, char *buffer){
 	char welcomeMessage[] = "Welcome!\n\tPress 1 to Login\n\tPress 2 to Register\n\tType 'exit' to Quit\n";
 	
 	char loginString[] = "Sucessfully Logged In\n\t1: Subscribe to a location\n\t2: Unsubscribe from location\n\t3: Send message to location\n\t4: Send private message\n\t5: See subscribed locations\n\t6: See online users\n\t8: Change password\n\t0: 'exit' to Quit\n";
+	bool loggedIn = false;
+	
 	sendData(socket, welcomeMessage, 0);
 
 	//cout << "in runServer" << endl;
@@ -143,38 +147,57 @@ void runServer(int socket, char *buffer){
 	recieveData(socket, buffer, strlen(buffer));
 	while(1){
 		cout << "in runServer while loop" << endl;
-		//cout << "Buffer: " << buffer << endl;
 
-		// if((strcmp(buffer, "exit") == 0)){
-		// 	break;
-		// }else 
-
-		if(strcmp(buffer, "1") == 0){
-			login(socket, buffer);
-
-			//send rest of data
+		if(loggedIn == true){
 
 			sendData(socket, loginString, 0); // change this to long user message
+
 			bzero(buffer, sizeof(buffer));
 			recieveData(socket, buffer, sizeof(buffer));
-		}else if(strcmp(buffer, "2") == 0){
-			if(registerForService(socket, buffer) == true){
-				char thankForRegistering[] = "Thank you for registering!\n\n";
-				sendData(socket, thankForRegistering, 0);
-				sendData(socket, welcomeMessage, 0);
+
+			if(strcmp(buffer, "1") == 0){
+				sendData(socket, loginString, 0);
 				bzero(buffer, sizeof(buffer));
 				recieveData(socket, buffer, sizeof(buffer));
 			}else{
-				char registerFailed[] = "I'm sorry, registering failed! Please try again!\n\n";
-				sendData(socket, registerFailed, 0);
+				sendData(socket, loginString, 0);
+				bzero(buffer, sizeof(buffer));
+				recieveData(socket, buffer, sizeof(buffer));
+			}
+			
+		}else{
+				
+			if(strcmp(buffer, "1") == 0){
+				if(login(socket, buffer) == true){
+					loggedIn = true;
+					cout << loggedIn << endl;
+				}else{
+					char loginFailed[] = "I'm sorry, login failed! Please try again!\n\n";
+					sendData(socket, loginFailed, 0);
+					sendData(socket, loginString, 0); 
+					bzero(buffer, sizeof(buffer));
+					recieveData(socket, buffer, sizeof(buffer));
+				}
+			}else if(strcmp(buffer, "2") == 0){
+				if(registerForService(socket, buffer) == true){
+					char thankForRegistering[] = "Thank you for registering!\n\n";
+					sendData(socket, thankForRegistering, 0);
+					sendData(socket, welcomeMessage, 0);
+					bzero(buffer, sizeof(buffer));
+					recieveData(socket, buffer, sizeof(buffer));
+				}else{
+					char registerFailed[] = "I'm sorry, registering failed! Please try again!\n\n";
+					sendData(socket, registerFailed, 0);
+					sendData(socket, welcomeMessage, 0);
+					bzero(buffer, sizeof(buffer));
+					recieveData(socket, buffer, sizeof(buffer));
+				}			
+			}else{
 				sendData(socket, welcomeMessage, 0);
 				bzero(buffer, sizeof(buffer));
 				recieveData(socket, buffer, sizeof(buffer));
-			}			
-		}else{
-			sendData(socket, welcomeMessage, 0);
-			bzero(buffer, sizeof(buffer));
-			recieveData(socket, buffer, sizeof(buffer));
+			}
+
 		}
 		
 	}
