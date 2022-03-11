@@ -33,7 +33,11 @@
 using namespace std;
 
 #define PORT 60069
-char httpHeader[25] = "HTTP/1.1 200 Ok\r\n"; //needed for sending stuff
+//ofstream loginFile;
+fstream loginFile;
+string fileName = "loginInfo.txt";
+User user();
+
 
 char userName[1024] = {0};
 char passWord[1024] = {0};
@@ -52,17 +56,10 @@ void sendData(int newSocket, char *message, int bufferSize){
 void recieveData(int newSocket, char *buffer, int bufferSize){
 	cout << "in recieveData" << endl;
 
-	//read(newSocket, buffer, bufferSize);
-	//return recv(newSocket, buffer, bufferSize, 0);
 	recv(newSocket, buffer, bufferSize, 0);
-	int i = 0;
-
-	// while((buffer[i++] = getchar()) != '\n'){
-	// 	;
-	// }
 }
 
-void getUserName(int socket, char *buffer){
+void getUserName(int socket){
 	cout << "in getUserName" << endl;
 	char userNameMessage[] = "\tUsername:";
 	sendData(socket, userNameMessage, strlen(userNameMessage));
@@ -70,7 +67,7 @@ void getUserName(int socket, char *buffer){
 	//return userName;
 }
 
-void getPassword(int socket, char *buffer){
+void getPassword(int socket){
 	char passwordMessage[] = "\tPassword:";
 	sendData(socket, passwordMessage, 0);
 	recieveData(socket, passWord, sizeof(passWord));
@@ -79,29 +76,65 @@ void getPassword(int socket, char *buffer){
 
 bool login(int socket, char *buffer){
 
-	ofstream loginFile;
+	//ifstream loginFile;
 
-	getUserName(socket, buffer);
-	getPassword(socket, buffer);
+	//loginFile.open(fileName);
+
+	getUserName(socket);
+	getPassword(socket);
 
 	cout << "Username: " << userName << endl;
 	cout << "Password: " << passWord << endl;
+
+	loginFile.open(fileName);
+	if(loginFile.is_open()){
+		cout << "File is open" << endl;
+		//use getline and parse the line
+		//try and match username and password
+		//if matched, make a new user object and return true
+		//char *fileLine[1024];
+		string fileLine;
+
+		while(getline(loginFile, fileLine)){
+			cout << "In getline" << endl << endl;
+			cout << fileLine << endl << endl;
+		}
+
+		loginFile.close();
+		return true;
+	}else{
+		return false;
+	}
 
 	return false;
 }
 
 bool registerForService(int socket, char *buffer){
-	getUserName(socket, buffer);
-	getPassword(socket, buffer);
+
+	//ofstream loginFile;
+
+	
+
+	getUserName(socket);
+	getPassword(socket);
 
 	cout << "Username: " << userName << endl;
 	cout << "Password: " << passWord << endl;
 
-	return false;
+	loginFile.open(fileName);
+	if(loginFile.is_open()){
+		loginFile << userName << "," << passWord << endl;
+		loginFile.close();
+		return true;
+	}else{
+		return false;
+	}
 }
 
 void runServer(int socket, char *buffer){
 	char welcomeMessage[] = "Welcome!\n\tPress 1 to Login\n\tPress 2 to Register\n\tType 'exit' to Quit\n";
+	
+	char loginString[] = "Sucessfully Logged In\n\t1: Subscribe to a location\n\t2: Unsubscribe from location\n\t3: Send message to location\n\t4: Send private message\n\t5: See subscribed locations\n\t6: See online users\n\t8: Change password\n\t0: 'exit' to Quit\n";
 	sendData(socket, welcomeMessage, 0);
 
 	//cout << "in runServer" << endl;
@@ -121,7 +154,7 @@ void runServer(int socket, char *buffer){
 
 			//send rest of data
 
-			sendData(socket, welcomeMessage, 0); // change this to long user message
+			sendData(socket, loginString, 0); // change this to long user message
 			bzero(buffer, sizeof(buffer));
 			recieveData(socket, buffer, sizeof(buffer));
 		}else if(strcmp(buffer, "2") == 0){

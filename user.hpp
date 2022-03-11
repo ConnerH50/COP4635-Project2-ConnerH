@@ -38,15 +38,18 @@ using namespace std;
 class User{
 
 private:
-	string userName;
-	vector <string> locations;
+	char *userName;
+	vector <char *> locations;
 	int socketNum;
-	vector <string> messages;
+	vector <char *> messages;
 
 public:
 	User();
-	void setUserName(string userName);
+	void setUserName(char *userName);
 	string getUserName();
+	void subToLocation(char *location);
+	void unsubToLocation(char *location);
+	void getLocations();
 	
 
 };
