@@ -42,6 +42,7 @@ vector<User> userVector;
 
 char userName[1024] = {0};
 char passWord[1024] = {0};
+char location[1024];
 
 /*
  * Methods
@@ -65,44 +66,25 @@ void getUserName(int socket){
 	char userNameMessage[] = "\tUsername:";
 	sendData(socket, userNameMessage, strlen(userNameMessage));
 	recieveData(socket, userName, sizeof(userName));
-	//return userName;
 }
 
 void getPassword(int socket){
 	char passwordMessage[] = "\tPassword:";
 	sendData(socket, passwordMessage, 0);
 	recieveData(socket, passWord, sizeof(passWord));
-	//return passWord;
 }
 
-bool login(int socket, char *buffer/*, User user*/){
-
-	// cout << "		SocketNum: " << socket << endl;
-
-	//ifstream loginFile;
-
-	//loginFile.open(fileName);
+bool login(int socket, char *buffer){
 
 	getUserName(socket);
 	getPassword(socket);
 
-	// cout << "Username: " << userName << endl;
-	// cout << "Password: " << passWord << endl;
-
 	loginFile.open(fileName);
 	if(loginFile.is_open()){
-		//cout << "File is open" << endl;
-
-		//use getline and parse the line
-		//try and match username and password
-		//if matched, make a new user object and return true
-		//char *fileLine[1024];
 		string fileLine;
 
 		//get line from file
 		while(getline(loginFile, fileLine)){
-			//cout << "In getline" << endl << endl;
-			//cout << fileLine << endl << endl;
 
 			//tokenize string by ',' or ","
 			stringstream sstream(fileLine);
@@ -116,88 +98,9 @@ bool login(int socket, char *buffer/*, User user*/){
 				i++;
 			}
 
-			//Try and match username and password
-			//cout << "	Username: " << userName << endl;
-			//cout << "	Password:" << passWord << endl;
-
-			// for(int i = 0; i < 2; i++){
-			// 	cout << "	Token: " << tokens[i] << endl;
-			// }
 
 			if((strcmp(tokens[0].c_str(), userName) == 0) && (strcmp(tokens[1].c_str(), passWord) == 0)){
 				cout << "		Username and password match!" << endl;
-				// do user stuff
-				//user.setUserName(userName);
-				//user.setSocketNum(socket);
-				loginFile.close();
-				return true;
-			}
-		}
-
-		loginFile.close();
-		return false;
-	}else{
-		return false;
-	}
-
-	return false;
-}
-
-bool login(int socket, char *buffer, User user){
-
-	// cout << "		SocketNum: " << socket << endl;
-
-	//ifstream loginFile;
-
-	//loginFile.open(fileName);
-
-	getUserName(socket);
-	getPassword(socket);
-
-	// cout << "Username: " << userName << endl;
-	// cout << "Password: " << passWord << endl;
-
-	loginFile.open(fileName);
-	if(loginFile.is_open()){
-		//cout << "File is open" << endl;
-
-		//use getline and parse the line
-		//try and match username and password
-		//if matched, make a new user object and return true
-		//char *fileLine[1024];
-		string fileLine;
-
-		//get line from file
-		while(getline(loginFile, fileLine)){
-			//cout << "In getline" << endl << endl;
-			//cout << fileLine << endl << endl;
-
-			//tokenize string by ',' or ","
-			stringstream sstream(fileLine);
-			string token;
-			string tokens[2];
-			int i = 0;
-
-			// tokenize string and store in array
-			while(getline(sstream, token, ',')){
-				tokens[i] = token;
-				i++;
-			}
-
-			//Try and match username and password
-			//cout << "	Username: " << userName << endl;
-			//cout << "	Password:" << passWord << endl;
-
-			// for(int i = 0; i < 2; i++){
-			// 	cout << "	Token: " << tokens[i] << endl;
-			// }
-
-			if((strcmp(tokens[0].c_str(), userName) == 0) && (strcmp(tokens[1].c_str(), passWord) == 0)){
-				cout << "		Username and password match!" << endl;
-				// do user stuff
-				user.setUserName(userName);
-				user.setSocketNum(socket);
-
 				loginFile.close();
 				return true;
 			}
@@ -231,12 +134,16 @@ bool registerForService(int socket, char *buffer){
 	}
 }
 
-void subToLocation(User clientUser, char *buffer){
+void getLocation(User clientUser, char *buffer){
+	char getLocationString[] = "Where would you like to subscribe to?";
 	cout << "socket: " << clientUser.getSocketNum() << endl;
-	sendData(clientUser.getSocketNum(), "Where would you like to subscribe to?", 0);
+	sendData(clientUser.getSocketNum(), getLocationString, 0);
 	bzero(buffer, sizeof(buffer));
-	recieveData(clientUser.getSocketNum(), buffer, sizeof(buffer));
-	clientUser.subToLocation(buffer);
+	recieveData(clientUser.getSocketNum(), location, sizeof(location));
+
+	//convert buffer to string?
+
+	//clientUser.printLocations();
 
 	//return false;
 }
@@ -252,12 +159,12 @@ void runServer(int socket, char *buffer){
 
 	//User user = new User();
 	
-	sendData(socket, welcomeMessage, 0);
+	//sendData(socket, welcomeMessage, 0); // may need to uncomment
 
 	//cout << "in runServer" << endl;
 
 	//main server loop
-	recieveData(socket, buffer, strlen(buffer));
+	//recieveData(socket, buffer, strlen(buffer)); //may need to uncomment
 	while(1){
 		// cout << "in runServer while loop" << endl;
 
@@ -271,13 +178,22 @@ void runServer(int socket, char *buffer){
 			if(strcmp(buffer, "1") == 0){ // sub to location
 				cout << "In 1, " << "Username is: " << clientUser.getUserName() << endl << endl;
 
-				subToLocation(clientUser, buffer);
+				getLocation(clientUser, buffer);
+				string locationString = location;
+				cout << "Location chosen: " << locationString << endl;
+				clientUser.subToLocation(locationString);
 
 				// sendData(socket, loginString, 0);
 				// bzero(buffer, sizeof(buffer));
 				// recieveData(socket, buffer, sizeof(buffer));
 			}else if(strcmp(buffer, "2") == 0){ //unsub
 				cout << "In 2" << endl << endl;
+
+				getLocation(clientUser, buffer);
+				string locationString = location;
+				cout << "Location chosen: " << locationString << endl;
+				clientUser.unsubToLocation(locationString);
+
 				// sendData(socket, loginString, 0);
 				// bzero(buffer, sizeof(buffer));
 				// recieveData(socket, buffer, sizeof(buffer));
@@ -296,7 +212,7 @@ void runServer(int socket, char *buffer){
 
 			}else if(strcmp(buffer, "5") == 0){ //see subbed locations
 				cout << "In 5" << endl << endl;
-				//clientUser.printLocations();
+				clientUser.printLocations();
 
 				// sendData(socket, loginString, 0);
 				// bzero(buffer, sizeof(buffer));
@@ -305,7 +221,7 @@ void runServer(int socket, char *buffer){
 			}else if(strcmp(buffer, "6") == 0){ //see all online users
 				cout << "In 6" << endl << endl;
 
-				for(int i = 0; i < userVector.size(); i++){
+				for(size_t i = 0; i < userVector.size(); i++){
 					char userInVector[1024];
 					strcpy(userInVector, userVector[i].getUserName().c_str());
 					sendData(socket, userInVector, 0);
@@ -335,14 +251,19 @@ void runServer(int socket, char *buffer){
 			}
 			
 		}else{
+
+			sendData(socket, welcomeMessage, 0); // change this to long user message
+
+			bzero(buffer, sizeof(buffer));
+			recieveData(socket, buffer, sizeof(buffer));
 				
 			if(strcmp(buffer, "1") == 0){
-				if(login(socket, buffer, clientUser) == true){
-					string username = userName;
+				if(login(socket, buffer) == true){
+					string usernameString = userName;
 					loggedIn = true;
 					cout << userName << endl;
 					//cout << username << endl;
-					clientUser.setUserName(username.c_str());
+					clientUser.setUserName(usernameString);
 					clientUser.setSocketNum(socket);
 					cout << "User's username: " << clientUser.getUserName() << endl;
 					cout << "User's socket number: " << clientUser.getSocketNum() << endl;
@@ -351,28 +272,28 @@ void runServer(int socket, char *buffer){
 				}else{
 					char loginFailed[] = "I'm sorry, login failed! Please try again!\n\n";
 					sendData(socket, loginFailed, 0);
-					sendData(socket, welcomeMessage, 0);
-					bzero(buffer, sizeof(buffer));
-					recieveData(socket, buffer, sizeof(buffer));
+					// sendData(socket, welcomeMessage, 0);
+					// bzero(buffer, sizeof(buffer));
+					// recieveData(socket, buffer, strlen(buffer));
 				}
 			}else if(strcmp(buffer, "2") == 0){
 				if(registerForService(socket, buffer) == true){
 					char thankForRegistering[] = "Thank you for registering!\n\n";
 					sendData(socket, thankForRegistering, 0);
-					sendData(socket, welcomeMessage, 0);
-					bzero(buffer, sizeof(buffer));
-					recieveData(socket, buffer, sizeof(buffer));
+					// sendData(socket, welcomeMessage, 0);
+					// bzero(buffer, sizeof(buffer));
+					// recieveData(socket, buffer, strlen(buffer));
 				}else{
 					char registerFailed[] = "I'm sorry, registering failed! Please try again!\n\n";
 					sendData(socket, registerFailed, 0);
-					sendData(socket, welcomeMessage, 0);
-					bzero(buffer, sizeof(buffer));
-					recieveData(socket, buffer, sizeof(buffer));
+					// sendData(socket, welcomeMessage, 0);
+					// bzero(buffer, sizeof(buffer));
+					// recieveData(socket, buffer, strlen(buffer));
 				}			
 			}else{
-				sendData(socket, welcomeMessage, 0);
-				bzero(buffer, sizeof(buffer));
-				recieveData(socket, buffer, sizeof(buffer));
+				// sendData(socket, welcomeMessage, 0);
+				// bzero(buffer, sizeof(buffer));
+				// recieveData(socket, buffer, strlen(buffer));
 			}
 
 		}
@@ -390,7 +311,7 @@ void threadHandler(int socket, char *buffer){
 //server gets user data for client and sends it to client
 
 int main(int argc, char **argv){
-	int newSocket, serverFD, pid;
+	int newSocket, serverFD;
 	int option = 1;
 	char hostBuffer[1024];
 	char buffer[1024];
@@ -398,8 +319,6 @@ int main(int argc, char **argv){
 	struct hostent *hostEntry;
 	struct sockaddr_in sockAddress;
 	int addressLength = sizeof(sockAddress);
-
-	char *messageToClient = "Hello from server\n";
 	
 	//get host things
 	gethostname(hostBuffer, sizeof(hostBuffer)); //get host name

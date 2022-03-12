@@ -28,8 +28,12 @@ void User::subToLocation(string location){
     locations.push_back(location);
 }
 
-void User::unsubToLocation(char *location){
-
+void User::unsubToLocation(string location){
+    for(size_t i = 0; i < locations.size(); i++){
+        if(locations[i] == location){
+            locations[i].erase();
+        }
+    }
 }
 
 vector<string> User::getLocations(){
@@ -37,7 +41,7 @@ vector<string> User::getLocations(){
 }
 
 void User::printLocations(){
-    for(int i = 0; i < locations.size(); i++){
+    for(size_t i = 0; i < locations.size(); i++){
         cout << locations[i] << endl;
     }
 }

@@ -51,7 +51,7 @@ public:
 	void setSocketNum(int socketNum);
 	int getSocketNum();
 	void subToLocation(string location);
-	void unsubToLocation(char *location);
+	void unsubToLocation(string location);
 	vector<string> getLocations();
 	void printLocations();
 	
