@@ -33,6 +33,7 @@
 using namespace std;
 
 #define PORT 60069
+#define BUFFERSIZE 1024
 //ofstream loginFile;
 fstream loginFile;
 string fileName = "loginInfo.txt";
@@ -170,10 +171,10 @@ void runServer(int socket, char *buffer){
 
 		if(loggedIn == true){
 
-			sendData(socket, loginString, 0); // change this to long user message
+			sendData(socket, loginString, 0); 
 
 			bzero(buffer, sizeof(buffer));
-			recieveData(socket, buffer, sizeof(buffer));
+			recieveData(socket, buffer, 1024);
 
 			if(strcmp(buffer, "1") == 0){ // sub to location
 				cout << "In 1, " << "Username is: " << clientUser.getUserName() << endl << endl;
