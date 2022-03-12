@@ -39,7 +39,7 @@ class User{
 
 private:
 	string userName;
-	vector <char *> locations;
+	vector <string> locations;
 	int socketNum;
 	vector <char *> messages;
 
@@ -50,9 +50,10 @@ public:
 	string getUserName();
 	void setSocketNum(int socketNum);
 	int getSocketNum();
-	void subToLocation(char *location);
+	void subToLocation(string location);
 	void unsubToLocation(char *location);
-	void getLocations();
+	vector<string> getLocations();
+	void printLocations();
 	
 
 };

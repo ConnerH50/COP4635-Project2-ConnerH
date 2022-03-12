@@ -24,7 +24,7 @@ int User::getSocketNum(){
     return socketNum;
 }
 
-void User::subToLocation(char *location){
+void User::subToLocation(string location){
     locations.push_back(location);
 }
 
@@ -32,6 +32,12 @@ void User::unsubToLocation(char *location){
 
 }
 
-void User::getLocations(){
+vector<string> User::getLocations(){
+    return locations;
+}
 
+void User::printLocations(){
+    for(int i = 0; i < locations.size(); i++){
+        cout << locations[i] << endl;
+    }
 }

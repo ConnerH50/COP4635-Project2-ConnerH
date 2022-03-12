@@ -36,6 +36,7 @@ using namespace std;
 //ofstream loginFile;
 fstream loginFile;
 string fileName = "loginInfo.txt";
+vector<User> userVector;
 //User user; //not needed
 
 
@@ -230,12 +231,22 @@ bool registerForService(int socket, char *buffer){
 	}
 }
 
+void subToLocation(User clientUser, char *buffer){
+	cout << "socket: " << clientUser.getSocketNum() << endl;
+	sendData(clientUser.getSocketNum(), "Where would you like to subscribe to?", 0);
+	bzero(buffer, sizeof(buffer));
+	recieveData(clientUser.getSocketNum(), buffer, sizeof(buffer));
+	clientUser.subToLocation(buffer);
+
+	//return false;
+}
+
 void runServer(int socket, char *buffer){
 	cout << "socket: " << socket << endl;
 	cout << "Client Handler Assigned" << endl;
 	char welcomeMessage[] = "Welcome!\n\tPress 1 to Login\n\tPress 2 to Register\n\tType 'exit' to Quit\n";
 	
-	char loginString[] = "Sucessfully Logged In\n\t1: Subscribe to a location\n\t2: Unsubscribe from location\n\t3: Send message to location\n\t4: Send private message\n\t5: See subscribed locations\n\t6: See online users\n\t8: Change password\n\t0: 'exit' to Quit\n";
+	char loginString[] = "Logged In\n\t1: Subscribe to a location\n\t2: Unsubscribe from location\n\t3: Send message to location\n\t4: Send private message\n\t5: See subscribed locations\n\t6: See online users\n\t8: Change password\n\t0: 'exit' to Quit\n";
 	bool loggedIn = false;
 	User clientUser;
 
@@ -259,55 +270,68 @@ void runServer(int socket, char *buffer){
 
 			if(strcmp(buffer, "1") == 0){ // sub to location
 				cout << "In 1, " << "Username is: " << clientUser.getUserName() << endl << endl;
-				sendData(socket, loginString, 0);
-				bzero(buffer, sizeof(buffer));
-				recieveData(socket, buffer, sizeof(buffer));
-			}else if(strcmp(buffer, "2") == 0){
+
+				subToLocation(clientUser, buffer);
+
+				// sendData(socket, loginString, 0);
+				// bzero(buffer, sizeof(buffer));
+				// recieveData(socket, buffer, sizeof(buffer));
+			}else if(strcmp(buffer, "2") == 0){ //unsub
 				cout << "In 2" << endl << endl;
-				sendData(socket, loginString, 0);
-				bzero(buffer, sizeof(buffer));
-				recieveData(socket, buffer, sizeof(buffer));
+				// sendData(socket, loginString, 0);
+				// bzero(buffer, sizeof(buffer));
+				// recieveData(socket, buffer, sizeof(buffer));
 
-			}else if(strcmp(buffer, "3") == 0){
+			}else if(strcmp(buffer, "3") == 0){ //send message to location
 				cout << "In 3" << endl << endl;
-				sendData(socket, loginString, 0);
-				bzero(buffer, sizeof(buffer));
-				recieveData(socket, buffer, sizeof(buffer));
+				// sendData(socket, loginString, 0);
+				// bzero(buffer, sizeof(buffer));
+				// recieveData(socket, buffer, sizeof(buffer));
 				
-			}else if(strcmp(buffer, "4") == 0){
+			}else if(strcmp(buffer, "4") == 0){ //send private message
 				cout << "In 4" << endl << endl;
-				sendData(socket, loginString, 0);
-				bzero(buffer, sizeof(buffer));
-				recieveData(socket, buffer, sizeof(buffer));
+				// sendData(socket, loginString, 0);
+				// bzero(buffer, sizeof(buffer));
+				// recieveData(socket, buffer, sizeof(buffer));
 
-			}else if(strcmp(buffer, "5") == 0){
+			}else if(strcmp(buffer, "5") == 0){ //see subbed locations
 				cout << "In 5" << endl << endl;
-				sendData(socket, loginString, 0);
-				bzero(buffer, sizeof(buffer));
-				recieveData(socket, buffer, sizeof(buffer));
-				
-			}else if(strcmp(buffer, "6") == 0){
-				cout << "In 6" << endl << endl;
-				sendData(socket, loginString, 0);
-				bzero(buffer, sizeof(buffer));
-				recieveData(socket, buffer, sizeof(buffer));
-				
-			}else if(strcmp(buffer, "7") == 0){
-				cout << "In 7" << endl << endl;
-				sendData(socket, loginString, 0);
-				bzero(buffer, sizeof(buffer));
-				recieveData(socket, buffer, sizeof(buffer));
+				//clientUser.printLocations();
 
-			}else if(strcmp(buffer, "8") == 0){
-				cout << "In 8" << endl << endl;
-				sendData(socket, loginString, 0);
-				bzero(buffer, sizeof(buffer));
-				recieveData(socket, buffer, sizeof(buffer));
+				// sendData(socket, loginString, 0);
+				// bzero(buffer, sizeof(buffer));
+				// recieveData(socket, buffer, sizeof(buffer));
 				
-			}else{
-				sendData(socket, loginString, 0);
-				bzero(buffer, sizeof(buffer));
-				recieveData(socket, buffer, sizeof(buffer));
+			}else if(strcmp(buffer, "6") == 0){ //see all online users
+				cout << "In 6" << endl << endl;
+
+				for(int i = 0; i < userVector.size(); i++){
+					char userInVector[1024];
+					strcpy(userInVector, userVector[i].getUserName().c_str());
+					sendData(socket, userInVector, 0);
+				}
+
+				sendData(socket, "\n\n", 0);
+				// sendData(socket, loginString, 0);
+				// bzero(buffer, sizeof(buffer));
+				// recieveData(socket, buffer, sizeof(buffer));
+				
+			}else if(strcmp(buffer, "7") == 0){ //see last 10 messages
+				cout << "In 7" << endl << endl;
+				// sendData(socket, loginString, 0);
+				// bzero(buffer, sizeof(buffer));
+				// recieveData(socket, buffer, sizeof(buffer));
+
+			}else if(strcmp(buffer, "8") == 0){ //change password
+				cout << "In 8" << endl << endl;
+				// sendData(socket, loginString, 0);
+				// bzero(buffer, sizeof(buffer));
+				// recieveData(socket, buffer, sizeof(buffer));
+				
+			}else{ // other
+				// sendData(socket, loginString, 0);
+				// bzero(buffer, sizeof(buffer));
+				// recieveData(socket, buffer, sizeof(buffer));
 			}
 			
 		}else{
@@ -322,6 +346,7 @@ void runServer(int socket, char *buffer){
 					clientUser.setSocketNum(socket);
 					cout << "User's username: " << clientUser.getUserName() << endl;
 					cout << "User's socket number: " << clientUser.getSocketNum() << endl;
+					userVector.push_back(clientUser);
 					//cout << loggedIn << endl;
 				}else{
 					char loginFailed[] = "I'm sorry, login failed! Please try again!\n\n";
@@ -351,6 +376,8 @@ void runServer(int socket, char *buffer){
 			}
 
 		}
+
+		cout << "Another Loop completed" << endl;
 		
 	}
 }
