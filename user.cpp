@@ -1,3 +1,8 @@
+/*
+ * Conner Hendricks
+ * COP4635 Project 2
+ */
+
 #include "user.hpp"
 
 User::User(){
