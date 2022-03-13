@@ -43,6 +43,7 @@ vector<User> userVector;
 
 char userName[1024] = {0};
 char passWord[1024] = {0};
+char newPassword[1024];
 char location[1024];
 
 /*
@@ -121,11 +122,7 @@ bool registerForService(int socket, char *buffer){
 	getUserName(socket);
 	getPassword(socket);
 
-	// cout << "Username: " << userName << endl;
-	// cout << "Password: " << passWord << endl;
-
-	//loginFile.open(fileName);
-	loginFile.open(fileName, ios::app); //ios::app for appending
+	loginFile.open(fileName, fstream::app); //ios::app for appending
 	if(loginFile.is_open()){
 		loginFile << userName << "," << passWord << endl;
 		loginFile.close();
@@ -133,6 +130,63 @@ bool registerForService(int socket, char *buffer){
 	}else{
 		return false;
 	}
+}
+
+void changePassword(User clientUser, char *buffer){
+	char changePassMessage[] = "What would you like your new password to be?";
+	sendData(clientUser.getSocketNum(), changePassMessage, sizeof(changePassMessage));
+	bzero(buffer, sizeof(buffer));
+	recieveData(clientUser.getSocketNum(), newPassword, sizeof(newPassword));
+	cout << "New Password: " << newPassword << endl;
+
+	string fileLine;
+	vector<string> fileLines;
+	loginFile.open(fileName, fstream::in | fstream::out);
+
+	if(loginFile.is_open()){
+		//getline into vector?
+		while(getline(loginFile, fileLine)){
+			cout << fileLine << endl << endl;
+			fileLines.push_back(fileLine);
+
+			//tokenize string by ","
+			stringstream sstream(fileLine);
+			string token;
+			string tokens[2];
+			int i = 0;
+
+			// tokenize string and store in array
+			while(getline(sstream, token, ',')){
+				tokens[i] = token;
+				i++;
+			}
+
+			if((strcmp(tokens[0].c_str(), clientUser.getUserName().c_str()) == 0)){
+				//cout << "		Username and password match!" << endl;
+				//cout << "	" << fileLines[fileLines.size() - 1] << endl;
+				string newUserPass = clientUser.getUserName() + "," + newPassword;
+				cout << newUserPass << endl << endl;
+				fileLines[fileLines.size() - 1] = newUserPass;
+			}
+
+			//check if username matches
+			//if yes, build new string using new password
+			//put new string in fileLines at current position (fileLines.size()?)
+
+		}
+	}
+	loginFile.close();
+
+	loginFile.open(fileName, fstream::in | fstream::out);
+	if(loginFile.is_open()){
+
+		for(size_t i = 0; i < fileLines.size(); i++){
+			loginFile << fileLines[i] << endl; // need to figure out how to delete the whole file
+			//cout << fileLines[i] << endl;
+		}
+	}
+
+	loginFile.close();
 }
 
 void getLocation(User clientUser, char *buffer){
@@ -219,8 +273,10 @@ void runServer(int socket, char *buffer){
 				// bzero(buffer, sizeof(buffer));
 				// recieveData(socket, buffer, sizeof(buffer));
 				
-			}else if(strcmp(buffer, "6") == 0){ //see all online users
+			}else if(strcmp(buffer, "6") == 0){ //see all online users, do something like this for seeing subscriptions
 				cout << "In 6" << endl << endl;
+				char sendUsersString[] = "List of users: \n\n";
+				sendData(socket, sendUsersString, 0);
 
 				for(size_t i = 0; i < userVector.size(); i++){
 					char userInVector[1024];
@@ -241,6 +297,7 @@ void runServer(int socket, char *buffer){
 
 			}else if(strcmp(buffer, "8") == 0){ //change password
 				cout << "In 8" << endl << endl;
+				changePassword(clientUser, buffer);
 				// sendData(socket, loginString, 0);
 				// bzero(buffer, sizeof(buffer));
 				// recieveData(socket, buffer, sizeof(buffer));
