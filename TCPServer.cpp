@@ -23,6 +23,7 @@
 #include <unistd.h>
 #include <netdb.h>
 #include <arpa/inet.h>
+#include <signal.h>
 
 #include "user.hpp"
 
@@ -222,6 +223,7 @@ void runServer(int socket, char *buffer){
 	//recieveData(socket, buffer, strlen(buffer)); //may need to uncomment
 	while(1){
 		// cout << "in runServer while loop" << endl;
+		signal(SIGPIPE, SIG_IGN); //lets server handle SIGPIPE signal from client
 
 		if(loggedIn == true){
 
@@ -371,6 +373,9 @@ void runServer(int socket, char *buffer){
 		//cout << "Another Loop completed" << endl;
 		
 	}
+
+	cout << "Done with method" << endl;
+
 }
 
 void threadHandler(int socket, char *buffer){
@@ -389,6 +394,7 @@ int main(int argc, char **argv){
 	struct hostent *hostEntry;
 	struct sockaddr_in sockAddress;
 	int addressLength = sizeof(sockAddress);
+	vector<thread> allClients;
 	
 	//get host things
 	gethostname(hostBuffer, sizeof(hostBuffer)); //get host name
@@ -436,18 +442,22 @@ int main(int argc, char **argv){
 		cout << "accept completed" << endl << endl;
 
 		//put threads here
-		vector<thread> allClients;
+		//vector<thread> allClients;
 
 		//char welcomeMessage[] = "Welcome!\n\tPress 1 to Login\n\tPress 2 to Register\n\tType 'exit' to Quit\n";
 		//sendData(newSocket, welcomeMessage, 0);
 		//runServer(newSocket, buffer);
 
-		thread newThread(runServer, newSocket, buffer);
-		// thread newThread(threadHandler, newSocket, buffer);
-		newThread.detach();
+		allClients.push_back(thread(runServer, newSocket, buffer));
+		//thread newThread(threadHandler, newSocket, buffer);
+		//newThread.join();
+		//newThread.detach();
 	}
 
-	//newThread.join();
+	for(size_t i = 0; i < allClients.size(); i++){
+		allClients[i].join();
+	}
+	
 
 	// if((pid = fork()) < 0){
 	// 	cout << "Error in fork" << endl;
