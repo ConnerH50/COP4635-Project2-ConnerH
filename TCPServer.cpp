@@ -39,7 +39,7 @@ using namespace std;
 fstream loginFile;
 string fileName = "loginInfo.txt";
 vector<User> userVector;
-//User user; //not needed
+vector<thread> threadVector;
 
 
 char userName[1024] = {0};
@@ -209,7 +209,7 @@ void runServer(int socket, char *buffer){
 	cout << "Client Handler Assigned" << endl;
 	char welcomeMessage[] = "Welcome!\n\tPress 1 to Login\n\tPress 2 to Register\n\tType 'exit' to Quit\n";
 	
-	char loginString[] = "\n\nLogged In\n\t1: Subscribe to a location\n\t2: Unsubscribe from location\n\t3: Send message to location\n\t4: Send private message\n\t5: See subscribed locations\n\t6: See online users\n\t8: Change password\n\t0: 'exit' to Quit\n";
+	char loginString[] = "\n\n---------------------------------------Logged In\n\t1: Subscribe to a location\n\t2: Unsubscribe from location\n\t3: Send message to location\n\t4: Send private message\n\t5: See subscribed locations\n\t6: See online users\n\t8: Change password\n\t0: 'exit' to Quit\n";
 	bool loggedIn = false;
 	User clientUser;
 
@@ -394,7 +394,6 @@ int main(int argc, char **argv){
 	struct hostent *hostEntry;
 	struct sockaddr_in sockAddress;
 	int addressLength = sizeof(sockAddress);
-	vector<thread> allClients;
 	
 	//get host things
 	gethostname(hostBuffer, sizeof(hostBuffer)); //get host name
@@ -448,15 +447,14 @@ int main(int argc, char **argv){
 		//sendData(newSocket, welcomeMessage, 0);
 		//runServer(newSocket, buffer);
 
-		allClients.push_back(thread(runServer, newSocket, buffer));
-		//thread newThread(threadHandler, newSocket, buffer);
-		//newThread.join();
-		//newThread.detach();
+		//allClients.push_back(thread(runServer, newSocket, buffer));
+		thread newThread(threadHandler, newSocket, buffer);
+		newThread.detach();
 	}
 
-	for(size_t i = 0; i < allClients.size(); i++){
-		allClients[i].join();
-	}
+	// for(size_t i = 0; i < allClients.size(); i++){
+	// 	allClients[i].join();
+	// }
 	
 
 	// if((pid = fork()) < 0){
