@@ -16,7 +16,7 @@ void TCPClient::connection(){
 	servAddr.sin_port = htons(PORT); //set port of address
 	memset(servAddr.sin_zero, '\0', sizeof servAddr.sin_zero); // set last struct variable
 
-	char *messageToServer = "Hello from client";
+	//char *messageToServer = "Hello from client";
 
 	if((clientSocket = socket(AF_INET, SOCK_STREAM, 0)) < 0){
 		perror("Socket creation error");
@@ -45,19 +45,16 @@ void TCPClient::connection(){
 }
 
 void TCPClient::sendData(char *messageToServer){
-	cout << "		in sendData" << endl;
 
 	send(clientSocket, messageToServer, strlen(messageToServer) + 1, 0); // + 1 for terminating byte
 	//send(clientSocket, messageToServer, strlen(messageToServer) 0); // + 1 for terminating byte
 }
 
 void TCPClient::recieveData(){
-	cout << "		in recieveData" << endl;
 	//memset(buffer, 0, 1024); // use memset to clear buffer for new data
 	valRead = recv(clientSocket, buffer, 1024, 0);
-	cout << valRead << endl;
-	//string buffString = string(buffer);
-	cout << buffer << endl;
+
+	cout << buffer << endl; // don't remove lol
 	memset(buffer, 0, 1024); // use memset to clear buffer for new data
 	
 }
@@ -96,14 +93,14 @@ void TCPClient::runClient(){
 
 		fgets(inputBuffer, 1024, stdin); //fgets reads newline char and null terminating char
 		inputBuffer[strcspn(inputBuffer, "\n")] = 0; // use strcspn (string c span) to remove it 'cause it isn't needed
-		cout << "inputBuffer: " << inputBuffer << endl;
+		//cout << "inputBuffer: " << inputBuffer << endl;
 	
 	}
 }
 
 int main(int argc, char **argv){
 
-	char input[1024];
+	//char input[1024];
 	//string strBuffer;
 
 	TCPClient client;

@@ -208,7 +208,7 @@ void runServer(int socket, char *buffer){
 	cout << "Client Handler Assigned" << endl;
 	char welcomeMessage[] = "Welcome!\n\tPress 1 to Login\n\tPress 2 to Register\n\tType 'exit' to Quit\n";
 	
-	char loginString[] = "Logged In\n\t1: Subscribe to a location\n\t2: Unsubscribe from location\n\t3: Send message to location\n\t4: Send private message\n\t5: See subscribed locations\n\t6: See online users\n\t8: Change password\n\t0: 'exit' to Quit\n";
+	char loginString[] = "\n\nLogged In\n\t1: Subscribe to a location\n\t2: Unsubscribe from location\n\t3: Send message to location\n\t4: Send private message\n\t5: See subscribed locations\n\t6: See online users\n\t8: Change password\n\t0: 'exit' to Quit\n";
 	bool loggedIn = false;
 	User clientUser;
 
@@ -267,7 +267,18 @@ void runServer(int socket, char *buffer){
 
 			}else if(strcmp(buffer, "5") == 0){ //see subbed locations
 				cout << "In 5" << endl << endl;
-				clientUser.printLocations();
+				//clientUser.printLocations();
+				vector<string> locationVector = clientUser.getLocations();
+
+				char sendLocationString[] = "Locations: \n\n";
+				sendData(socket, sendLocationString, 0);
+
+				for(size_t i = 0; i < locationVector.size(); i++){
+					char userLocation[1024];
+					strcpy(userLocation, locationVector[i].c_str());
+					strcat(userLocation,"\n");
+					sendData(socket, userLocation, 0);
+				}
 
 				// sendData(socket, loginString, 0);
 				// bzero(buffer, sizeof(buffer));
@@ -281,10 +292,11 @@ void runServer(int socket, char *buffer){
 				for(size_t i = 0; i < userVector.size(); i++){
 					char userInVector[1024];
 					strcpy(userInVector, userVector[i].getUserName().c_str());
+					strcat(userInVector,"\n");
 					sendData(socket, userInVector, 0);
 				}
 
-				sendData(socket, "\n\n", 0);
+				//sendData(socket, "\n", 0);
 				// sendData(socket, loginString, 0);
 				// bzero(buffer, sizeof(buffer));
 				// recieveData(socket, buffer, sizeof(buffer));
@@ -356,7 +368,7 @@ void runServer(int socket, char *buffer){
 
 		}
 
-		cout << "Another Loop completed" << endl;
+		//cout << "Another Loop completed" << endl;
 		
 	}
 }
