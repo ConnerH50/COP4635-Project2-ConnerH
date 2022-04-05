@@ -32,15 +32,9 @@ void TCPClient::connection(){
 
 	cout << "Socket connected to Server" << endl;
 
-	//send(clientSocket, messageToServer, strlen(messageToServer), 0);
-
-	// sendData(messageToServer);
-	// cout << "hello message sentt" << endl;
-	// recieveData();
-
-	// valRead = read(clientSocket, buffer, 1024);
-	// //string buffString = string(buffer);
-	// cout << buffer << endl;
+	//make new thread for revieving messages, causes segfault
+	thread newThread(&TCPClient::recieveMessage, this);
+	newThread.detach();
 
 }
 
@@ -67,14 +61,36 @@ int TCPClient::getClientSocket(){
 	return clientSocket;
 }
 
-void TCPClient::runMessage(int clientSocket){
+void TCPClient::recieveMessage(){
+	/*int their_sock = *((int *)clientSocket);
+    char msg[500];
+    int len;
 
+    while ((len = recv(their_sock, msg, 500, 0)) > 0)
+    {
+        puts(msg);
+        memset(msg, 0, 500);
+    }*/
+
+	//int their_sock = *((int *)clientSocket);
+	int their_sock = clientSocket;
+    char message[500];
+    int len;
+
+    while ((len = recv(their_sock, message, 500, 0)) > 0)
+    {
+        puts(message);
+        memset(message, 0, 500);
+    }
 }
 
 void TCPClient::runClient(){
 	connection();
 
-	recieveData();
+	// recieveData();
+
+	// thread newThread(&TCPClient::recieveMessage, this);
+	// newThread.detach();
 	
 	fgets(inputBuffer, 1024, stdin); //fgets reads newline char and null terminating char
 	inputBuffer[strcspn(inputBuffer, "\n")] = 0; // use strcspn (string c span) to remove it 'cause it isn't needed
@@ -85,6 +101,8 @@ void TCPClient::runClient(){
 		sendData(inputBuffer);
 	}
 
+	//Make new thread and detach it
+
 	//main client loop
 	while(1/*!(strcmp(inputBuffer, "exit") == 0)*/){
 		if((strcmp(inputBuffer, "exit") == 0)){
@@ -93,7 +111,7 @@ void TCPClient::runClient(){
 		}
 
 		sendData(inputBuffer);
-		recieveData();
+		//recieveData();
 
 		fgets(inputBuffer, 1024, stdin); //fgets reads newline char and null terminating char
 		inputBuffer[strcspn(inputBuffer, "\n")] = 0; // use strcspn (string c span) to remove it 'cause it isn't needed

@@ -53,7 +53,7 @@ public:
 	char *getBuffer();
 	int getClientSocket();
 	void runClient();
-	void runMessage(int clientSocket);
+	void recieveMessage();
 	
 
 };

@@ -194,6 +194,14 @@ void getLocation(User clientUser, char *buffer){
 	recieveData(clientUser.getSocketNum(), location, sizeof(location));
 }
 
+void getMessage(User clientUser, char *buffer){ // just like get userName, maybe should return the buffer?
+
+}
+
+void sendMessage(User clientUser, char *buffer){
+
+}
+
 void runServer(int socket, char *buffer){
 	cout << "Client Handler Assigned" << endl;
 	char welcomeMessage[] = "Welcome!\n\tPress 1 to Login\n\tPress 2 to Register\n\tType 'exit' to Quit\n";
@@ -259,7 +267,7 @@ void runServer(int socket, char *buffer){
 					sendData(socket, userInVector, 0);
 				}
 
-			}else if(strcmp(buffer, "7") == 0){ //see last 10 messages
+			}else if(strcmp(buffer, "7") == 0){ //see last 10 messages from client
 				//cout << "In 7" << endl << endl;
 
 			}else if(strcmp(buffer, "8") == 0){ //change password
