@@ -67,6 +67,10 @@ int TCPClient::getClientSocket(){
 	return clientSocket;
 }
 
+void TCPClient::runMessage(int clientSocket){
+
+}
+
 void TCPClient::runClient(){
 	connection();
 
