@@ -100,20 +100,9 @@ void TCPClient::runClient(){
 
 int main(int argc, char **argv){
 
-	//char input[1024];
-	//string strBuffer;
-
 	TCPClient client;
 	client.runClient();
-	// client.connection();
-
-	// client.recieveData();
-
-	// fgets(input, 1024, stdin); //fgets reads newline char and null terminating char
-	// input[strcspn(input, "\n")] = 0; // use strcspn (string c span) to remove it 'cause it isn't needed
-	// client.sendData(input);
-
-	// client.recieveData();
+	
 	cout << "closing client" << endl;
 	close(client.getClientSocket());
 
