@@ -29,9 +29,23 @@ int User::getSocketNum(){
     return socketNum;
 }
 
-void User::subToLocation(string location){
-    locations.push_back(location);
+void User::setSpotInVector(int spotInVector){
+    this->spotInVector = spotInVector;
 }
+
+int User::getSpotInVector(){
+    return spotInVector;
+}
+
+void User::subToLocation(string location){
+    this->location = location;
+    locations.push_back(this->location);
+}
+
+// void User::subToLocation(char *location){
+//     //this->location = location;
+//     locationVector.push_back(location);
+// }
 
 void User::unsubToLocation(string location){
     for(size_t i = 0; i < locations.size(); i++){

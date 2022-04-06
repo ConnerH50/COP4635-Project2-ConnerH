@@ -9,6 +9,7 @@
 #include <vector>
 #include <condition_variable> //May not need
 #include <fstream>
+#include <utility>
 
 /*
  * C includes
@@ -51,6 +52,9 @@ char userName[1024] = {0};
 char passWord[1024] = {0};
 char newPassword[1024];
 char location[1024];
+
+int spotInVector = 0;
+string locationString;
 
 /*
  * Methods
@@ -224,19 +228,34 @@ void runServer(int socket, char *buffer){
 				//cout << "In 1, " << "Username is: " << clientUser.getUserName() << endl << endl;
 
 				getLocation(clientUser, buffer);
-				string locationString = location;
+				// string locationString = location;
+				locationString = location;
 				cout << "Location chosen: " << locationString << endl;
+				
 				clientUser.subToLocation(locationString);
+				cout << clientUser.getSpotInVector() << endl;
+				userVector[clientUser.getSpotInVector()].subToLocation(locationString); //this makes it work
+				
+
+				for(auto i:userVector){
+					cout << i.getUserName() << " " << i.getSocketNum() << endl << "\t";
+					i.printLocations();
+				}
 
 			}else if(strcmp(buffer, "2") == 0){ //unsub
 				//cout << "In 2" << endl << endl;
 
 				getLocation(clientUser, buffer);
-				string locationString = location;
+				// string locationString = location;
+				locationString = location;
 				cout << "Location chosen: " << locationString << endl;
 				clientUser.unsubToLocation(locationString);
 			}else if(strcmp(buffer, "3") == 0){ //send message to location
-				//cout << "In 3" << endl << endl;
+				cout << "In 3" << endl << endl;
+
+				for(auto i:userVector){
+					i.printLocations();
+				}
 
 			}else if(strcmp(buffer, "4") == 0){ //send private message
 				//cout << "In 4" << endl << endl;
@@ -292,7 +311,9 @@ void runServer(int socket, char *buffer){
 					
 					clientUser.setUserName(usernameString);
 					clientUser.setSocketNum(socket);
+					clientUser.setSpotInVector(spotInVector++);
 					userVector.push_back(clientUser);
+					//userVector.push_back(move(clientUser));
 				}else{
 					char loginFailed[] = "I'm sorry, login failed! Please try again!\n\n";
 					sendData(socket, loginFailed, 0);
