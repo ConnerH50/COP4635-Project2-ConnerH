@@ -48,10 +48,11 @@ vector<User> userVector;
 vector<thread> threadVector;
 
 
-char userName[1024] = {0};
-char passWord[1024] = {0};
-char newPassword[1024];
-char location[1024];
+char userName[BUFFERSIZE] = {0};
+char passWord[BUFFERSIZE] = {0};
+char message[BUFFERSIZE] = {0};
+char newPassword[BUFFERSIZE];
+char location[BUFFERSIZE];
 
 int spotInVector = 0;
 string locationString;
@@ -200,9 +201,13 @@ void getLocation(User clientUser, char *buffer){
 
 void getMessage(User clientUser, char *buffer){ // just like get userName, maybe should return the buffer?
 
+	char messageMessage[] = "Message to other user(s):";
+	sendData(userVector[clientUser.getSpotInVector()].getSocketNum(), messageMessage, sizeof(messageMessage));
+
 }
 
 void sendMessage(User clientUser, char *buffer){
+
 
 }
 
@@ -231,14 +236,15 @@ void runServer(int socket, char *buffer){
 				// string locationString = location;
 				locationString = location;
 				cout << "Location chosen: " << locationString << endl;
-				
+
 				clientUser.subToLocation(locationString);
-				cout << clientUser.getSpotInVector() << endl;
 				userVector[clientUser.getSpotInVector()].subToLocation(locationString); //this makes it work
+
+				cout << clientUser.getSpotInVector() << endl;
 				
 
 				for(auto i:userVector){
-					cout << i.getUserName() << " " << i.getSocketNum() << endl << "\t";
+					cout << i.getUserName() << " " << i.getSocketNum() << endl;
 					i.printLocations();
 				}
 
@@ -250,6 +256,7 @@ void runServer(int socket, char *buffer){
 				locationString = location;
 				cout << "Location chosen: " << locationString << endl;
 				clientUser.unsubToLocation(locationString);
+				userVector[clientUser.getSpotInVector()].unsubToLocation(locationString);
 			}else if(strcmp(buffer, "3") == 0){ //send message to location
 				cout << "In 3" << endl << endl;
 
@@ -262,7 +269,8 @@ void runServer(int socket, char *buffer){
 
 			}else if(strcmp(buffer, "5") == 0){ //see subbed locations
 				//cout << "In 5" << endl << endl;
-				vector<string> locationVector = clientUser.getLocations();
+				//vector<string> locationVector = clientUser.getLocations();
+				vector<string> locationVector = userVector[clientUser.getSpotInVector()].getLocations();
 
 				char sendLocationString[] = "Subscribed Locations: \n\n";
 				sendData(socket, sendLocationString, 0);
