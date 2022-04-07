@@ -200,6 +200,20 @@ void getLocation(User clientUser, char *buffer){
 	recieveData(clientUser.getSocketNum(), location, sizeof(location));
 }
 
+void seeSubbedLocations(User user){
+	vector<string> locationVector = user.getLocations();
+
+	char sendLocationString[] = "Subscribed Locations: \n\n";
+	sendData(user.getSocketNum(), sendLocationString, 0);
+
+	for(size_t i = 0; i < locationVector.size(); i++){
+		char userLocation[1024];
+		strcpy(userLocation, locationVector[i].c_str());
+		strcat(userLocation,"\n");
+		sendData(user.getSocketNum(), userLocation, 0);
+	}
+}
+
 void getMessage(User clientUser){ // just like get userName
 
 	char messageMessage[] = "Message to other user(s):";
@@ -262,32 +276,17 @@ void runServer(int socket, char *buffer){
 			}else if(strcmp(buffer, "3") == 0){ //send message to location
 				cout << "In 3" << endl << endl;
 
+				seeSubbedLocations(userVector[clientUser.getSpotInVector()]);
+
 				//get location
 				getLocation(clientUser, buffer);
 				string locationString = location;
-				//locationString = location;
 				cout << "Location chosen: " << locationString << endl;
 
 				getMessage(userVector[clientUser.getSpotInVector()]);
 
 				messageString = message;
-				cout << "message: " << messageString << endl;
-
-				// for(auto user:userVector){
-				// 	user.printLocations();
-				// 	cout << user.checkForLocation(locationString) << endl;
-
-				// 	//if statement and stuff
-				// 	if(user.checkForLocation(locationString) == true){
-				// 		//send message
-				// 		sendData(user.getSocketNum(), message, sizeof(message));
-
-				// 		//put message in that user's array, scope problem that puts messageString out of scope
-				// 		user.addMessage(messageString);
-				// 		cout << "Printing Messages" << endl;
-				// 		user.printMessages();
-				// 	}
-				// }
+				// cout << "message: " << messageString << endl;
 
 				for(size_t i = 0; i < userVector.size(); i++){
 					userVector[i].printLocations();
@@ -300,12 +299,12 @@ void runServer(int socket, char *buffer){
 
 						//put message in that user's array, scope problem that puts messageString out of scope
 						userVector[i].addMessage(messageString);
-						cout << "Printing Messages" << endl;
-						userVector[i].printMessages();
+						// cout << "Printing Messages" << endl;
+						// userVector[i].printMessages();
 					}
 				}
 
-				cout << "MessageString: " << messageString << endl;
+				//cout << "MessageString: " << messageString << endl;
 
 			}else if(strcmp(buffer, "4") == 0){ //send private message
 				//cout << "In 4" << endl << endl;
@@ -313,17 +312,19 @@ void runServer(int socket, char *buffer){
 			}else if(strcmp(buffer, "5") == 0){ //see subbed locations
 				//cout << "In 5" << endl << endl;
 				//vector<string> locationVector = clientUser.getLocations();
-				vector<string> locationVector = userVector[clientUser.getSpotInVector()].getLocations();
+				// vector<string> locationVector = userVector[clientUser.getSpotInVector()].getLocations();
 
-				char sendLocationString[] = "Subscribed Locations: \n\n";
-				sendData(socket, sendLocationString, 0);
+				// char sendLocationString[] = "Subscribed Locations: \n\n";
+				// sendData(socket, sendLocationString, 0);
 
-				for(size_t i = 0; i < locationVector.size(); i++){
-					char userLocation[1024];
-					strcpy(userLocation, locationVector[i].c_str());
-					strcat(userLocation,"\n");
-					sendData(socket, userLocation, 0);
-				}
+				// for(size_t i = 0; i < locationVector.size(); i++){
+				// 	char userLocation[1024];
+				// 	strcpy(userLocation, locationVector[i].c_str());
+				// 	strcat(userLocation,"\n");
+				// 	sendData(socket, userLocation, 0);
+				// }
+
+				seeSubbedLocations(userVector[clientUser.getSpotInVector()]);
 
 			}else if(strcmp(buffer, "6") == 0){ //see all online users, do something like this for seeing subscriptions
 				//cout << "In 6" << endl << endl;
@@ -353,6 +354,9 @@ void runServer(int socket, char *buffer){
 				
 
 				for(size_t i = 0; i < messageVector.size(); i++){
+
+					// need to add if i > 9 then break
+
 					char userMessage[BUFFERSIZE];
 					strcpy(userMessage, messageVector[i].c_str());
 					cout << "userMessage: " << userMessage << endl;
