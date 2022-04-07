@@ -199,14 +199,15 @@ void getLocation(User clientUser, char *buffer){
 	recieveData(clientUser.getSocketNum(), location, sizeof(location));
 }
 
-void getMessage(User clientUser, char *buffer){ // just like get userName, maybe should return the buffer?
+void getMessage(User clientUser){ // just like get userName
 
 	char messageMessage[] = "Message to other user(s):";
 	sendData(userVector[clientUser.getSpotInVector()].getSocketNum(), messageMessage, sizeof(messageMessage));
+	recieveData(userVector[clientUser.getSpotInVector()].getSocketNum(), message, sizeof(message));
 
 }
 
-void sendMessage(User clientUser, char *buffer){
+void sendMessage(User clientUser, char *buffer){ //needs to add message to all Users
 
 
 }
@@ -243,9 +244,9 @@ void runServer(int socket, char *buffer){
 				cout << clientUser.getSpotInVector() << endl;
 				
 
-				for(auto i:userVector){
-					cout << i.getUserName() << " " << i.getSocketNum() << endl;
-					i.printLocations();
+				for(auto user:userVector){
+					cout << user.getUserName() << " " << user.getSocketNum() << endl;
+					user.printLocations();
 				}
 
 			}else if(strcmp(buffer, "2") == 0){ //unsub
@@ -260,8 +261,27 @@ void runServer(int socket, char *buffer){
 			}else if(strcmp(buffer, "3") == 0){ //send message to location
 				cout << "In 3" << endl << endl;
 
-				for(auto i:userVector){
-					i.printLocations();
+				//get location
+				getLocation(clientUser, buffer);
+				string locationString = location;
+				//locationString = location;
+				cout << "Location chosen: " << locationString << endl;
+
+				getMessage(userVector[clientUser.getSpotInVector()]);
+
+				cout << "message: " << message << endl;
+
+				for(auto user:userVector){
+					user.printLocations();
+					cout << user.checkForLocation(locationString) << endl;
+
+					//if statement and stuff
+					if(user.checkForLocation(locationString) == true){
+						//send message
+						sendData(user.getSocketNum(), message, sizeof(message));
+
+						//put message in that user's array
+					}
 				}
 
 			}else if(strcmp(buffer, "4") == 0){ //send private message

@@ -42,10 +42,14 @@ void User::subToLocation(string location){
     locations.push_back(this->location);
 }
 
-// void User::subToLocation(char *location){
-//     //this->location = location;
-//     locationVector.push_back(location);
-// }
+bool User::checkForLocation(string location){
+    for(auto place:locations){
+        if(place == location){
+            return true;
+        }
+    }
+    return false;
+}
 
 void User::unsubToLocation(string location){
     for(size_t i = 0; i < locations.size(); i++){

@@ -42,7 +42,7 @@ public:
 	void setSpotInVector(int spotInVector);
 	int getSpotInVector();
 	void subToLocation(string location);
-	//void subToLocation(char *location);
+	bool checkForLocation(string location);
 	void unsubToLocation(string location);
 	vector<string> getLocations();
 	void printLocations();
