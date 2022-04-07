@@ -71,11 +71,15 @@ void User::printLocations(){
 
 void User::addMessage(string message){
     this->message = message;
-    messages.push_back(this->message);
+    messages.insert(messages.begin(), this->message);
 }
 
 void User::printMessages(){
     for(size_t i = 0; i < messages.size(); i++){
         cout << messages[i] << endl;
     }
+}
+
+vector<string> User::getMessages(){
+    return messages;
 }

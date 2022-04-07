@@ -49,6 +49,7 @@ public:
 	void printLocations();
 	void addMessage(string message);
 	void printMessages();
+	vector<string> getMessages();
 	
 
 };

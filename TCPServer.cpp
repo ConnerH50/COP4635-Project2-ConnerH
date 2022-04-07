@@ -338,10 +338,27 @@ void runServer(int socket, char *buffer){
 				}
 
 			}else if(strcmp(buffer, "7") == 0){ //see last 10 messages from client
-				cout << "In 7" << endl << endl;
+				cout << endl << "In 7" << endl << endl;
 				cout << "MessageString: " << messageString << endl;
 
-				userVector[clientUser.getSpotInVector()].printMessages();
+				userVector[clientUser.getSpotInVector()].printMessages(); // need to delete
+				vector<string> messageVector = userVector[clientUser.getSpotInVector()].getMessages();
+
+				cout << "messageVector: " << messageVector[0] << endl;
+
+				char sendMessagesString[] = "Last 10 Messages: \n";
+				sendData(userVector[clientUser.getSpotInVector()].getSocketNum(), sendMessagesString, 0);
+
+				cout << "messageVector size: " << messageVector.size() << endl;
+				
+
+				for(size_t i = 0; i < messageVector.size(); i++){
+					char userMessage[BUFFERSIZE];
+					strcpy(userMessage, messageVector[i].c_str());
+					cout << "userMessage: " << userMessage << endl;
+					strcat(userMessage, "\n");
+					sendData(userVector[clientUser.getSpotInVector()].getSocketNum(), userMessage, 0);
+				}
 
 			}else if(strcmp(buffer, "8") == 0){ //change password
 				//cout << "In 8" << endl << endl;
