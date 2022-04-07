@@ -56,6 +56,7 @@ char location[BUFFERSIZE];
 
 int spotInVector = 0;
 string locationString;
+string messageString;
 
 /*
  * Methods
@@ -216,7 +217,7 @@ void runServer(int socket, char *buffer){
 	cout << "Client Handler Assigned" << endl;
 	char welcomeMessage[] = "Welcome!\n\tPress 1 to Login\n\tPress 2 to Register\n\tType 'exit' to Quit\n";
 	
-	char loginString[] = "\n\n---------------------------------------\nLogged In\n\t1: Subscribe to a location\n\t2: Unsubscribe from location\n\t3: Send message to location\n\t4: Send private message\n\t5: See subscribed locations\n\t6: See online users\n\t8: Change password\n\t0: 'exit' to Quit\n";
+	char loginString[] = "\n\n---------------------------------------\nLogged In\n\t1: Subscribe to a location\n\t2: Unsubscribe from location\n\t3: Send message to location\n\t4: Send private message\n\t5: See subscribed locations\n\t6: See online users\n\t7: See last 10 Messages\n\t8: Change password\n\t0: 'exit' to Quit\n";
 	bool loggedIn = false;
 	User clientUser;
 
@@ -241,13 +242,13 @@ void runServer(int socket, char *buffer){
 				clientUser.subToLocation(locationString);
 				userVector[clientUser.getSpotInVector()].subToLocation(locationString); //this makes it work
 
-				cout << clientUser.getSpotInVector() << endl;
+				// cout << clientUser.getSpotInVector() << endl;
 				
 
-				for(auto user:userVector){
-					cout << user.getUserName() << " " << user.getSocketNum() << endl;
-					user.printLocations();
-				}
+				// for(auto user:userVector){
+				// 	cout << user.getUserName() << " " << user.getSocketNum() << endl;
+				// 	user.printLocations();
+				// }
 
 			}else if(strcmp(buffer, "2") == 0){ //unsub
 				//cout << "In 2" << endl << endl;
@@ -269,20 +270,42 @@ void runServer(int socket, char *buffer){
 
 				getMessage(userVector[clientUser.getSpotInVector()]);
 
-				cout << "message: " << message << endl;
+				messageString = message;
+				cout << "message: " << messageString << endl;
 
-				for(auto user:userVector){
-					user.printLocations();
-					cout << user.checkForLocation(locationString) << endl;
+				// for(auto user:userVector){
+				// 	user.printLocations();
+				// 	cout << user.checkForLocation(locationString) << endl;
+
+				// 	//if statement and stuff
+				// 	if(user.checkForLocation(locationString) == true){
+				// 		//send message
+				// 		sendData(user.getSocketNum(), message, sizeof(message));
+
+				// 		//put message in that user's array, scope problem that puts messageString out of scope
+				// 		user.addMessage(messageString);
+				// 		cout << "Printing Messages" << endl;
+				// 		user.printMessages();
+				// 	}
+				// }
+
+				for(size_t i = 0; i < userVector.size(); i++){
+					userVector[i].printLocations();
+					cout << userVector[i].checkForLocation(locationString) << endl;
 
 					//if statement and stuff
-					if(user.checkForLocation(locationString) == true){
+					if(userVector[i].checkForLocation(locationString) == true){
 						//send message
-						sendData(user.getSocketNum(), message, sizeof(message));
+						sendData(userVector[i].getSocketNum(), message, sizeof(message));
 
-						//put message in that user's array
+						//put message in that user's array, scope problem that puts messageString out of scope
+						userVector[i].addMessage(messageString);
+						cout << "Printing Messages" << endl;
+						userVector[i].printMessages();
 					}
 				}
+
+				cout << "MessageString: " << messageString << endl;
 
 			}else if(strcmp(buffer, "4") == 0){ //send private message
 				//cout << "In 4" << endl << endl;
@@ -315,7 +338,8 @@ void runServer(int socket, char *buffer){
 				}
 
 			}else if(strcmp(buffer, "7") == 0){ //see last 10 messages from client
-				//cout << "In 7" << endl << endl;
+				cout << "In 7" << endl << endl;
+				cout << "MessageString: " << messageString << endl;
 
 			}else if(strcmp(buffer, "8") == 0){ //change password
 				//cout << "In 8" << endl << endl;

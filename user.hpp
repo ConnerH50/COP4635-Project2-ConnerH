@@ -28,9 +28,10 @@ private:
 	string userName;
 	vector <string> locations;
 	vector <char *> locationVector;
-	string location;
+	string location, message;
 	int socketNum, spotInVector;
-	vector <char *> messages;
+	vector <char *> messagesVector;
+	vector <string> messages;
 
 public:
 	User();
@@ -46,6 +47,8 @@ public:
 	void unsubToLocation(string location);
 	vector<string> getLocations();
 	void printLocations();
+	void addMessage(string message);
+	void printMessages();
 	
 
 };

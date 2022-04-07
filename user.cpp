@@ -68,3 +68,14 @@ void User::printLocations(){
         cout << locations[i] << endl;
     }
 }
+
+void User::addMessage(string message){
+    this->message = message;
+    messages.push_back(this->message);
+}
+
+void User::printMessages(){
+    for(size_t i = 0; i < messages.size(); i++){
+        cout << messages[i] << endl;
+    }
+}
