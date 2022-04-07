@@ -341,6 +341,8 @@ void runServer(int socket, char *buffer){
 				cout << "In 7" << endl << endl;
 				cout << "MessageString: " << messageString << endl;
 
+				userVector[clientUser.getSpotInVector()].printMessages();
+
 			}else if(strcmp(buffer, "8") == 0){ //change password
 				//cout << "In 8" << endl << endl;
 				changePassword(clientUser, buffer);
