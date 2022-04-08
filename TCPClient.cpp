@@ -62,17 +62,6 @@ int TCPClient::getClientSocket(){
 }
 
 void TCPClient::recieveMessage(){
-	/*int their_sock = *((int *)clientSocket);
-    char msg[500];
-    int len;
-
-    while ((len = recv(their_sock, msg, 500, 0)) > 0)
-    {
-        puts(msg);
-        memset(msg, 0, 500);
-    }*/
-
-	//int their_sock = *((int *)clientSocket);
 	int their_sock = clientSocket;
     char message[500];
     int len;
@@ -81,16 +70,12 @@ void TCPClient::recieveMessage(){
     {
         puts(message);
         memset(message, 0, 500);
+		puts("\n");
     }
 }
 
 void TCPClient::runClient(){
 	connection();
-
-	// recieveData();
-
-	// thread newThread(&TCPClient::recieveMessage, this);
-	// newThread.detach();
 	
 	fgets(inputBuffer, 1024, stdin); //fgets reads newline char and null terminating char
 	inputBuffer[strcspn(inputBuffer, "\n")] = 0; // use strcspn (string c span) to remove it 'cause it isn't needed
@@ -104,18 +89,15 @@ void TCPClient::runClient(){
 	//Make new thread and detach it
 
 	//main client loop
-	while(1/*!(strcmp(inputBuffer, "exit") == 0)*/){
+	while(1){
 		if((strcmp(inputBuffer, "exit") == 0)){
-			//cout << "inputBuffer and exit are equal" << endl;
 			break;
 		}
 
 		sendData(inputBuffer);
-		//recieveData();
 
 		fgets(inputBuffer, 1024, stdin); //fgets reads newline char and null terminating char
 		inputBuffer[strcspn(inputBuffer, "\n")] = 0; // use strcspn (string c span) to remove it 'cause it isn't needed
-		//cout << "inputBuffer: " << inputBuffer << endl;
 	
 	}
 }

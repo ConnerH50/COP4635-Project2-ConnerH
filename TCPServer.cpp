@@ -70,13 +70,11 @@ void sendData(int newSocket, char *message, int bufferSize){
 }
 
 void recieveData(int newSocket, char *buffer, int bufferSize){
-	// cout << "in recieveData" << endl;
 
 	recv(newSocket, buffer, bufferSize, 0);
 }
 
 void getUserName(int socket){
-	// cout << "in getUserName" << endl;
 	char userNameMessage[] = "\tUsername:";
 	sendData(socket, userNameMessage, strlen(userNameMessage));
 	recieveData(socket, userName, sizeof(userName));
@@ -293,9 +291,12 @@ void runServer(int socket, char *buffer){
 					//if statement and stuff
 					if(userVector[i].checkForLocation(locationString) == true){
 						//send message
+						char messageSender[] = "Message from: ";
+						strcat(messageSender, userVector[clientUser.getSpotInVector()].getUserName().c_str());
+						sendData(userVector[i].getSocketNum(), messageSender, sizeof(messageSender));
 						sendData(userVector[i].getSocketNum(), message, sizeof(message));
 
-						//put message in that user's array, scope problem that puts messageString out of scope
+						//put message in that user's array
 						userVector[i].addMessage(messageString);
 					}
 				}
@@ -319,9 +320,12 @@ void runServer(int socket, char *buffer){
 				for(size_t i = 0; i < userVector.size(); i++){
 
 					if(name == userVector[i].getUserName()){
+						char messageSender[] = "Message from: ";
+						strcat(messageSender, userVector[clientUser.getSpotInVector()].getUserName().c_str());
+						sendData(userVector[i].getSocketNum(), messageSender, sizeof(messageSender));
 						sendData(userVector[i].getSocketNum(), message, sizeof(message));
 
-						//put message in that user's array, scope problem that puts messageString out of scope
+						//put message in that user's array
 						userVector[i].addMessage(messageString);
 					}
 				}
