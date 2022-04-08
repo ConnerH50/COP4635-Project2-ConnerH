@@ -214,6 +214,18 @@ void seeSubbedLocations(User user){
 	}
 }
 
+void seeUsers(User user){
+	char sendUsersString[] = "List of users: \n\n";
+	sendData(user.getSocketNum(), sendUsersString, 0);
+
+	for(size_t i = 0; i < userVector.size(); i++){
+		char userInVector[1024];
+		strcpy(userInVector, userVector[i].getUserName().c_str());
+		strcat(userInVector,"\n");
+		sendData(user.getSocketNum(), userInVector, 0);
+	}
+}
+
 void getMessage(User clientUser){ // just like get userName
 
 	char messageMessage[] = "Message to other user(s):";
@@ -289,7 +301,7 @@ void runServer(int socket, char *buffer){
 				// cout << "message: " << messageString << endl;
 
 				for(size_t i = 0; i < userVector.size(); i++){
-					userVector[i].printLocations();
+					//userVector[i].printLocations();
 					cout << userVector[i].checkForLocation(locationString) << endl;
 
 					//if statement and stuff
@@ -308,6 +320,44 @@ void runServer(int socket, char *buffer){
 
 			}else if(strcmp(buffer, "4") == 0){ //send private message
 				//cout << "In 4" << endl << endl;
+
+				char whatUser[] = "What user:";
+
+				//get user list
+				seeUsers(userVector[clientUser.getSpotInVector()]);
+				sendData(userVector[clientUser.getSpotInVector()].getSocketNum(), whatUser, sizeof(whatUser));
+				recieveData(userVector[clientUser.getSpotInVector()].getSocketNum(), userName, sizeof(userName));
+
+				string name = userName;
+
+				getMessage(userVector[clientUser.getSpotInVector()]);
+
+				messageString = message;
+
+				for(size_t i = 0; i < userVector.size(); i++){
+					//userVector[i].printLocations();
+					// cout << userVector[i].checkForLocation(locationString) << endl;
+
+					// //if statement and stuff
+					// if(userVector[i].checkForLocation(locationString) == true){
+					// 	//send message
+					// 	sendData(userVector[i].getSocketNum(), message, sizeof(message));
+
+					// 	//put message in that user's array, scope problem that puts messageString out of scope
+					// 	userVector[i].addMessage(messageString);
+					// 	// cout << "Printing Messages" << endl;
+					// 	// userVector[i].printMessages();
+					// }
+
+					if(name == userVector[i].getUserName()){
+						sendData(userVector[i].getSocketNum(), message, sizeof(message));
+
+						//put message in that user's array, scope problem that puts messageString out of scope
+						userVector[i].addMessage(messageString);
+					}
+				}
+
+
 
 			}else if(strcmp(buffer, "5") == 0){ //see subbed locations
 				//cout << "In 5" << endl << endl;
@@ -328,15 +378,17 @@ void runServer(int socket, char *buffer){
 
 			}else if(strcmp(buffer, "6") == 0){ //see all online users, do something like this for seeing subscriptions
 				//cout << "In 6" << endl << endl;
-				char sendUsersString[] = "List of users: \n\n";
-				sendData(socket, sendUsersString, 0);
+				// char sendUsersString[] = "List of users: \n\n";
+				// sendData(userVector[clientUser.getSpotInVector()].getSocketNum(), sendUsersString, 0);
 
-				for(size_t i = 0; i < userVector.size(); i++){
-					char userInVector[1024];
-					strcpy(userInVector, userVector[i].getUserName().c_str());
-					strcat(userInVector,"\n");
-					sendData(socket, userInVector, 0);
-				}
+				// for(size_t i = 0; i < userVector.size(); i++){
+				// 	char userInVector[1024];
+				// 	strcpy(userInVector, userVector[i].getUserName().c_str());
+				// 	strcat(userInVector,"\n");
+				// 	sendData(userVector[clientUser.getSpotInVector()].getSocketNum(), userInVector, 0);
+				// }
+
+				seeUsers(userVector[clientUser.getSpotInVector()]);
 
 			}else if(strcmp(buffer, "7") == 0){ //see last 10 messages from client
 				cout << endl << "In 7" << endl << endl;
@@ -356,6 +408,9 @@ void runServer(int socket, char *buffer){
 				for(size_t i = 0; i < messageVector.size(); i++){
 
 					// need to add if i > 9 then break
+					if(i > 9){
+						break;
+					}
 
 					char userMessage[BUFFERSIZE];
 					strcpy(userMessage, messageVector[i].c_str());
